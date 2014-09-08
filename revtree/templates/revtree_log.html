@@ -1,0 +1,13 @@
+<html xmlns:py="http://genshi.edgewall.org/">
+  <div id="revtree">
+    <dl py:if="log.chgset">
+      <dt class="property time">Timestamp:</dt>
+      <dd class="time">${log.time}
+        (<span py:replace="log.age">less than one hour</span>)</dd>
+      <dt class="property author">Author:</dt>
+      <dd class="author">${log.author}</dd>
+      <dt class="property message">Message:</dt>
+      <dd class="message"><span py:replace="log.message"> </span></dd>
+    </dl>
+  </div>
+</html>

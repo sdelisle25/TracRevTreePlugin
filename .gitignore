@@ -1,0 +1,6 @@
+# compiled sources
+*.pyc
+
+# Eclipse projects
+.pydevproject
+.project

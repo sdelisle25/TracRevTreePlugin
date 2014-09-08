@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:i18n="http://genshi.edgewall.org/i18n">
+  <xi:include href="layout.html" />
+  <?xml-stylesheet href="revtree/css/revtree.css" type="text/css"?>
+  <head>
+    <!-- This document conforms to XHTML + SVG + MathML
+         However, a tiny issue in Trac (#4614) prevents the validation of
+         the RevtreePlugin documents.
+      -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>$title</title>
+
+    <script type="text/javascript">
+    //<![CDATA[
+    jQuery(document).ready(function($) {
+      var warning_msg;
+      initializeFilters();
+
+      $("#nav-changeset").hide();
+
+      $("#warning").hide();
+      warning_msg = $("#warning").html();
+
+      $("#group").change(function() {
+        $("#groupdesc").enable(this.selectedIndex != 0);
+      }).change();
+
+      $(".foldable").enableFolding(false);
+
+      $("input[name$='_branch']").each(function() {
+        $(this).neosuggest('', 'autocompletion', null);
+      });
+
+      $(".datepicker").datepicker();
+
+      // Ajax request for filter processing
+      $('#submit_filters').on('click', function(event) {
+         event.preventDefault();
+         event.stopPropagation();
+
+         $("#warning").hide();
+         $("#svg_errormsg").hide();
+         $("#nav-changeset").hide();
+         $("#zoom").hide();
+         $("#svg").empty();
+
+         $("body h1").addClass("blink");
+
+         $.ajax({
+           url: "",
+           type: "POST",
+           async: true,
+           dataType: 'json', /* Server response data format */
+           data: $("#query_form").serialize(),
+           success: function(data) {
+             var tree;
+
+             $("#main :input").attr("disabled", "disabled");
+
+             tree = new RevTree(data.tree, data.url, data.style);
+
+             window.revtree = tree;
+             tree.init();
+
+             var field = $("#metrics");
+             field.css("font-family", data.fontfamily);
+             field.css("font-size", data.fontsize);
+
+             tree.build();
+             tree.render();
+
+             $("#main :input").removeAttr("disabled");
+
+             $("#zoom").show();
+
+             /* REMARK: fix strange behavior float property not properly done */
+             $("#svgview").css('display', 'none');
+             $("#svgview").css('display', 'block');
+
+             $("select[name$='_revision']").each(function() {
+               var value = $(this).val();
+               $(this).empty();
+               $(this).addOptions(data.revisions);
+
+               window.revisions = data.revisions;
+               $(this).val(value);
+             });
+
+             $("select[name$='_author']").each(function() {
+               var value = $(this).val();
+               $(this).empty();
+               $(this).addOptions(data.authors);
+
+               window.authors = data.authors;
+
+               $(this).val(value);
+             });
+
+             $("body h1").removeClass("blink");
+           },
+           error: function(xhr, ajaxOptions, thrownError) {
+             if(xhr.status == 404) {
+               $("#warning").html(warning_msg + xhr.responseText);
+               $("#warning").show();
+             }
+             else {
+               $("#svg_errormsg").html(xhr.responseText);
+               $("#svg_errormsg").show();
+             }
+             $("body h1").removeClass("blink");
+           }
+         });
+      });
+
+      // Simulate click on filter update button
+      $('#submit_filters').trigger('click')
+    });
+    // ]]>
+    </script>
+  </head>
+  <body>
+    <h1>$title</h1>
+    <!-- REMARK: the span below is used to compute font size -->
+    <span id="metrics" class="metrics"></span>
+    <div id="tooltip_connect" class="hidden"></div>
+    <div id="tooltip" class="hidden">
+      <div id="tooltip_title">Changeset [<span id="tooltip_url"></span>]
+        <span id="tooltip_clause"></span>
+      </div>
+      <div id="tooltip_body"></div>
+    </div>
+
+    <div class="toolbox">
+      <div id="nav-changeset" class="nav-changeset">
+        <div class='nav-icon'></div>
+        <button class="nav-dest" title="Goto destination (ctrl + d)"
+                onclick="scroll_dest(event)"></button>
+        <button class="nav-src" title="Goto source (ctrl + s)"
+                onclick="scroll_src(event)"></button>
+      </div>
+      <div id="zoom" class="zoom">
+        <div class='zoom-icon'></div>
+        <button class="zoom-in" title="Zoom In (ctrl + a)" onclick="zoom(1.05)">
+         +
+        </button>
+        <button class="zoom-out" title="Zoom Out (ctrl + z)" onclick="zoom(0.95)">
+        -
+        </button>
+      </div>
+    </div>
+
+    <div id="content" class="query" style='${"float: left;" if query_options=="false" or  query_filters=="false" else "float: none;"}'>
+      <form id="query_form" method="post" action="${href.revtree('query')}"
+            py:with="field_names = sorted(fields.keys())">
+        <fieldset id="filters" name="query_filters" class="${'collapsed' if query_filters=='true' else 'uncollapsed'}">
+          <legend class="foldable">Filters</legend>
+          <table summary="Query filters">
+            <tbody py:for="clause_num, constraints in enumerate(clauses)"
+                   py:with="clause_pre = '%d_' % clause_num">
+              <tr style="${'display: none' if clause_num == 0 else None}">
+                <td>
+                  <div class="trac-clause-lsep">&nbsp;<hr /></div>
+                  <div class="trac-clause-msep">Or</div>
+                  <div class="trac-clause-rsep">&nbsp;<hr /></div>
+                </td>
+              </tr>
+              <tr><td class="trac-clause">
+                <table class="trac-clause">
+                  <tbody py:for="field_name in field_names" py:if="field_name in constraints"
+                         py:with="field = field_name; n_field_name = clause_pre + field_name;
+                                  constraint = constraints[field_name];">
+                    <tr py:for="constraint_idx, constraint_value in enumerate(constraint)"
+                        class="${field_name}">
+                      <td>
+                        <div class="inlinebuttons">
+                          <input type="submit" value="&ndash;" name="rm_filter_${n_field_name}_${constraint_idx}"/>
+                        </div>
+                      </td>
+                      <py:choose test="constraint_idx">
+                        <py:when test="0">
+                          <py:if test="field_name == 'deleted_branches'">
+                              <th scope="row"><label id="label_${n_field_name}">show deleted branch</label></th>
+                          </py:if>
+                          <py:if test="field_name != 'deleted_branches'">
+                              <th scope="row"><label id="label_${n_field_name}">$field_name</label></th>
+                          </py:if>
+                          <td class="filter">
+                              <select py:if="field_name == 'deleted_branches'" name="${n_field_name}">
+                                <option value="True"
+                                    selected="${constraint_value == 'True' or None}">True
+                                </option>
+                                <option value="False"
+                                    selected="${constraint_value == 'False' or None}">False
+                                </option>
+                              </select>
+
+                              <select py:if="field_name == 'author'" name="${n_field_name}">
+                                  <option py:for="author in authors" value="${author if author else ''}"
+                                      selected="${author == constraint_value or None}">${author if author else 'all'}</option>
+                              </select>
+
+                              <input py:if="field_name == 'branch'" type="text"
+                              id="${n_field_name}" name="${n_field_name}" value="${constraint_value}"></input>
+
+                              <select py:if="field_name == 'period'" name="${n_field_name}">
+                                  <option py:for="period in periods" value="${period['value']}"
+                                      selected="${period['value'] == constraint_value or None}">${period['name']}</option>
+                              </select>
+
+                              <py:if test="field_name == 'date'">
+                                  <label>${_('From ')}</label>
+                                  <input type="text" title="${_('Format: %(datehint)s', datehint=date_hint)}" size="${len(date_hint)}"
+                                         name="${n_field_name}" class="datepicker" value="${constraint_value[0]}"/>
+                                  <label>${_(' to ')}</label>
+                                  <input type="text" title="${_('Format: %(datehint)s', datehint=date_hint)}" size="${len(date_hint)}"
+                                         name="${n_field_name}" class="datepicker" value="${constraint_value[1]}"/>
+                              </py:if>
+
+                              <py:if test="field_name == 'revision'">
+                                  <label>${_('From ')}</label>
+                                  <select py:if="field_name == 'revision'" name="${n_field_name}">
+                                      <option py:for="revision in revisions" value="${revision}"
+                                          selected="${revision == constraint_value[0] or None}">${revision}</option>
+                                  </select>
+                                  <label>${_('up to ')}</label>
+                                  <select py:if="field_name == 'revision'" name="${n_field_name}">
+                                      <option py:for="revision in revisions" value="${revision}"
+                                          selected="${revision == constraint_value[1] or None}">${revision}</option>
+                                  </select>
+                              </py:if>
+                          </td>
+                        </py:when>
+                        <py:otherwise><!--! not the first line of a multiline constraint -->
+                          <th scope="row" colspan="1"><label>or</label></th>
+                          <td class="filter">
+                              <select py:if="field_name == 'deleted_branches'" name="${n_field_name}">
+                                <option value="True"
+                                    selected="${constraint_value == 'True' or None}">True
+                                </option>
+                                <option value="False"
+                                    selected="${constraint_value == 'False' or None}">False
+                                </option>
+                              </select>
+
+                              <select py:if="field_name == 'author'" name="${n_field_name}">
+                                  <option py:for="author in authors" value="${author if author else ''}"
+                                      selected="${author == constraint_value or None}">${author if author else 'all'}</option>
+                              </select>
+
+                              <input py:if="field_name == 'branch'" type="text"
+                              id="${n_field_name}" name="${n_field_name}" value="${constraint_value}"/>
+
+                              <py:if test="field_name == 'date'">
+                                  <label>${_('From ')}</label>
+                                  <input type="text" title="${_('Format: %(datehint)s', datehint=date_hint)}" size="${len(date_hint)}"
+                                         name="${n_field_name}" class="datepicker" value="${constraint_value[0]}"/>
+                                  <label>${_(' to ')}</label>
+                                  <input type="text" title="${_('Format: %(datehint)s', datehint=date_hint)}" size="${len(date_hint)}"
+                                         name="${n_field_name}" class="datepicker" value="${constraint_value[1]}"/>
+                              </py:if>
+
+                              <select py:if="field_name == 'period'" name="${n_field_name}">
+                                  <option py:for="period in periods" value="${period['value']}"
+                                      selected="${period['value'] == constraint_value or None}">${period['name']}</option>
+                              </select>
+                              <py:if test="field_name == 'revision'">
+                                  <label>${_('From ')}</label>
+                                  <select py:if="field_name == 'revision'" name="${n_field_name}">
+                                      <option py:for="revision in sorted(revisions, reverse=False)" value="${revision}"
+                                          selected="${revision == constraint_value[0] or None}">${revision}</option>
+                                  </select>
+                                  <label>${_('up to ')}</label>
+                                  <select py:if="field_name == 'revision'" name="${n_field_name}">
+                                      <option py:for="revision in sorted(revisions, reverse=True)" value="${revision}"
+                                          selected="${revision == constraint_value[1] or None}">${revision}</option>
+                                  </select>
+                              </py:if>
+                          </td>
+                        </py:otherwise>
+                      </py:choose>
+                    </tr>
+                  </tbody>
+
+                  <tbody py:with="last_clause = clause_num == (len(clauses) or 1) - 1">
+                    <tr class="actions">
+                      <td class="and" colspan="2">
+                        &nbsp;<label for="add_filter_${clause_num}">And</label>&nbsp;
+                        <select name="add_filter_${clause_num}" id="add_filter_${clause_num}">
+                          <option></option>
+                          <option py:for="field_name in field_names" value="${field_name}">${fields[field_name]}</option>
+                        </select>
+                        <div class="inlinebuttons">
+                          <input type="submit" name="add_${clause_num}" value="+" />
+                        </div>
+                      </td>
+                      <td py:if="last_clause" class="or" colspan="2">
+                        <label for="add_clause">Or</label>&nbsp;
+                        <select name="add_clause_${clause_num + 1}" id="add_clause">
+                          <option></option>
+                          <option py:for="field_name in field_names" value="${field_name}">${fields[field_name]}</option>
+                        </select>
+                        <div class="inlinebuttons">
+                          <input type="submit" name="add_${clause_num + 1}" value="+" />
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td></tr>
+            </tbody>
+          </table>
+        </fieldset>
+        <fieldset id="options" name="query_options" class="${'collapsed' if query_options=='true' else 'uncollapsed'}">
+          <legend class="foldable">Options</legend>
+          <table summary="Query Options">
+            <tbody>
+              <tr>
+                <td><div>Style:</div>
+                  <input type="radio" id="compact" name="style" value="compact"
+                         checked="${'checked' if style == 'compact' else None}"/>
+                  <label for="compact">Compact</label>
+                  <input type="radio" id="timeline" name="style" value="timeline"
+                         checked="${'checked' if style == 'timeline' else None}"/>
+                  <label for="timeline">TimeLine</label>
+                </td>
+              </tr>
+            </tbody>
+            <tbody>
+              <tr><td colspan="2"><div class="trac-clause-sep"><hr/></div></td></tr>
+            </tbody>
+          </table>
+        </fieldset>
+        <div class="buttons">
+          <input type="submit" name="update" value="${_('Update')}" id="submit_filters"/>
+          <input type="submit" name="reset" value="${_('Reset')}" id="submit_reset"/>
+        </div>
+        <hr/>
+        <div id="svg_errormsg" class='svg_errormsg'></div>
+      </form>
+    </div>
+    <!--  <div id="svg" class="${'clear' if query_options=='true' and query_filters=='true' else 'svg'}">  -->
+    <section contextmenu="mymenu">
+      <menu type="context" id="mymenu">
+        <menu label="RevTree">
+          <menuitem label="ZoomIn" icon="/chrome/revtree/images/zoom-in-icon.png" onclick="window.zoom(1.05)"></menuitem>
+          <menuitem label="ZoomOut" icon="/chrome/revtree/images/zoom-out-icon.png" onclick="window.zoom(0.95);"></menuitem>
+          <menuitem label="Goto source" icon="/chrome/revtree/images/chgset-src-icon.png" onclick="window.scroll_src(event);"></menuitem>
+          <menuitem label="Goto dest" icon="/chrome/revtree/images/chgset-dest-icon.png" onclick="window.scroll_dest(event);"></menuitem>
+        </menu>
+      </menu>
+    </section>
+    <div id="svg" contextmenu="mymenu">
+    </div>
+  </body>
+</html>
