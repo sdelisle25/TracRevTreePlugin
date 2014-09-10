@@ -135,9 +135,9 @@ class SvgBranch(object):
                     lastrev=self._lastrev)
 
     def create_tag(self, tag):
-        svgcs = self.svgchangeset(tag.revision)
-
-        svgcs.add_tag(tag)
+        svgc = self.svgchangeset(tag.revision)
+        if svgc:
+            svgc.add_tag(tag)
 
     def svgchangeset(self, rev):
         for chgset in self._svgchangesets:
@@ -233,10 +233,6 @@ class SvgRevtree(object):
             # REMARK: possibly multiple branches with same name, case created,
             # deleted and recreated
             for branch in self.repos.get_branch(branch_name):
-#                 # Filter deleted branch
-#                 if not showdeletedbranch and branch.terminalrev:
-#                     continue
-
                 # filter if branch has got some revisions in revrange
                 brev = filter(lambda r, mn=self.revrange[0],
                               mx=self.revrange[1]:
