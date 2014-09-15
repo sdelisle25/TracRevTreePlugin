@@ -317,14 +317,15 @@
           <legend class="foldable">Options</legend>
           <table summary="Query Options">
             <tbody>
+              <tr><td>Style:</td></tr>
               <tr>
-                <td><div>Style:</div>
-                  <input type="radio" id="compact" name="style" value="compact"
+                <td>
+                 <input type="radio" id="compact" name="style" value="compact"
                          checked="${'checked' if style == 'compact' else None}"/>
-                  <label for="compact">Compact</label>
-                  <input type="radio" id="timeline" name="style" value="timeline"
-                         checked="${'checked' if style == 'timeline' else None}"/>
-                  <label for="timeline">TimeLine</label>
+                 <label for="compact">Compact</label>
+                 <input type="radio" id="timeline" name="style" value="timeline"
+                        checked="${'checked' if style == 'timeline' else None}"/>
+                 <label for="timeline">TimeLine</label>
                 </td>
               </tr>
             </tbody>
