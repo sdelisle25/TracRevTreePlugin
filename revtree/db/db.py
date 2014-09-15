@@ -184,8 +184,11 @@ class DBUpdater(DBMixing):
                     continue
 
                 with self.env.db_transaction as db:
-                    args = (tag.name, tag.prettyname, tag.rev,
-                            tag.clone[1], tag.clone[0])
+                    args = (to_unicode(tag.name),
+                            to_unicode(tag.prettyname),
+                            tag.rev,
+                            to_unicode(tag.clone[1]),
+                            tag.clone[0])
                     db("""INSERT INTO revtree_tags (name, prettyname, tag_revision, branch, revision)
                           VALUES(%s, %s, %s, %s, %s)""", args)
 
@@ -201,12 +204,9 @@ class DBUpdater(DBMixing):
                     self.env.log.debug("Revision='%s' already exist", rev)
                     continue
 
-                branch_name = to_unicode(vc.branchname.encode('ascii',
-                                                              errors='ignore'))
-                pretty_name = to_unicode(vc.prettyname.encode('ascii',
-                                                              errors='ignore'))
-                author = to_unicode(vc.changeset.author.encode('ascii',
-                                                               errors='ignore'))
+                branch_name = to_unicode(vc.branchname)
+                pretty_name = to_unicode(vc.prettyname)
+                author = to_unicode(vc.changeset.author)
 
                 with self.env.db_transaction as db:
                     self.env.log.debug("Insert revision='%s'", rev)
@@ -214,7 +214,7 @@ class DBUpdater(DBMixing):
                     # Brings information
                     bring = vc.prop('rth:bring')
                     if bring:
-                        args = (branch_name.encode('utf-8'), rev, bring)
+                        args = (branch_name, rev, bring)
 
                         db("INSERT INTO revtree_brings (branch, revision," \
                            " bring) VALUES(%s, %s, %s)", args)
@@ -222,17 +222,15 @@ class DBUpdater(DBMixing):
                     # Delivers information
                     deliver = vc.prop('rth:deliver')
                     if deliver:
-                        args = (branch_name.encode('utf-8'),
-                                rev,
-                                deliver)
+                        args = (branch_name, rev, deliver)
                         db("""INSERT INTO revtree_delivers (branch, revision, deliver)
                            VALUES(%s, %s, %s)""", args)
 
                     # Revision information
                     args = (int(rev),
-                            branch_name.encode('utf-8'),
-                            pretty_name.encode('utf-8'),
-                            author.encode('utf-8'),
+                            branch_name,
+                            pretty_name,
+                            author,
                             to_timestamp(vc.date),
                             str(vc.last),
                             str(vc.clone))
@@ -266,12 +264,9 @@ class DBUpdater(DBMixing):
                     self.env.log.debug("Revision='%s' do not exist", rev)
                     continue
 
-                branch_name = to_unicode(vc.branchname.encode('ascii',
-                                                              errors='ignore'))
-                pretty_name = to_unicode(vc.prettyname.encode('ascii',
-                                                              errors='ignore'))
-                author = to_unicode(vc.changeset.author.encode('ascii',
-                                                               errors='ignore'))
+                branch_name = to_unicode(vc.branchname)
+                pretty_name = to_unicode(vc.prettyname)
+                author = to_unicode(vc.changeset.author)
 
                 with self.env.db_transaction as db:
                     self.env.log.debug("Update revision='%s'", rev)
@@ -283,18 +278,18 @@ class DBUpdater(DBMixing):
                         rows = self.env.db_query("SELECT * FROM revtree_brings "
                                                  "WHERE revision=%s", (rev,))
                         if not rows:
-                            args = (branch_name.encode('utf-8'), rev, bring)
+                            args = (branch_name, rev, bring)
 
                             db("INSERT INTO revtree_brings (branch, revision," \
                                " bring) VALUES(%s, %s, %s)", args)
                         else:
                             db("UPDATE revtree_brings SET bring=%%s " \
                                " WHERE (branch='%s' AND revision=%s)" % \
-                               (branch_name.encode('utf-8'), rev), (bring,))
+                               (branch_name, rev), (bring,))
                     else:
                         db("DELETE from revtree_brings " \
-                           " WHERE (branch='%s' AND revision=%s)" % \
-                           (branch_name.encode('utf-8'), rev))
+                           " WHERE (branch='%s' AND revision=%s)" %
+                           (branch_name, rev))
 
                     # Delivers information
                     deliver = vc.prop('rth:deliver')
@@ -303,23 +298,23 @@ class DBUpdater(DBMixing):
                         rows = self.env.db_query("SELECT * FROM revtree_delivers "
                                                  "WHERE revision=%s", (rev,))
                         if not rows:
-                            args = (branch_name.encode('utf-8'), rev, deliver)
+                            args = (branch_name, rev, deliver)
                             db("INSERT INTO revtree_delivers (branch, " \
                                "revision, deliver) VALUES(%s, %s, %s)", args)
                         else:
                             db("UPDATE revtree_delivers SET deliver=%%s " \
                                " WHERE (branch='%s' AND revision=%s)" % \
-                               (branch_name.encode('utf-8'), rev), (deliver,))
+                               (branch_name, rev), (deliver,))
                     else:
                         db("DELETE from revtree_delivers" \
                            " WHERE (branch='%s' AND revision=%s)" % \
-                           (branch_name.encode('utf-8'), rev))
+                           (branch_name, rev))
 
                     # Revision information
                     args = (int(rev),
-                            branch_name.encode('utf-8'),
-                            pretty_name.encode('utf-8'),
-                            author.encode('utf-8'),
+                            branch_name,
+                            pretty_name,
+                            author,
                             to_timestamp(vc.date),
                             str(vc.last),
                             str(vc.clone))
@@ -327,7 +322,7 @@ class DBUpdater(DBMixing):
                        " branch_name=%%s, author=%%s, date=%%s, " \
                        "last=%%s, clone=%%s " \
                        "WHERE (branch='%s' AND revision=%s)" % \
-                       (branch_name.encode('utf-8'), rev), args)
+                       (branch_name, rev), args)
         except:
             self.env.log.error('revtree update error %s' %
                                traceback.format_exc())
@@ -336,14 +331,15 @@ class DBUpdater(DBMixing):
     def update_branch(self, vc, db):
         brc = BranchEntry()
 
-        row = self.env.db_query("SELECT * from revtree_branches WHERE (branch=%s" \
-                                "AND terminalrev IS NULL)", (vc.branchname,))
+        brc_name = to_unicode(vc.branchname)
+        pretty_name = to_unicode(vc.prettyname)
 
-        brc_name = to_unicode(vc.branchname.encode('ascii', errors='ignore'))
-        pretty_name = to_unicode(vc.prettyname.encode('ascii', errors='ignore'))
+        row = self.env.db_query("SELECT * from revtree_branches WHERE (branch=%s" \
+                                "AND terminalrev IS NULL)", (brc_name,))
         if not row:
-            brc.branch = brc_name.encode('utf-8')
-            brc.name = pretty_name.encode('utf-8')
+            brc.branch = brc_name
+            brc.name = pretty_name
+
             brc.firstrev = vc.rev
             brc.date = to_timestamp(vc.date)
             sql = "INSERT INTO revtree_branches VALUES (%s)" % brc.sql_fmt()
@@ -352,7 +348,7 @@ class DBUpdater(DBMixing):
             # REMARK: %%s mandatory to get %s in final string
             fmt = ', '.join('%s = %%s' % n for n in brc._field_names)
             sql = "UPDATE revtree_branches SET %s WHERE (branch='%s' AND " \
-                  " (terminalrev IS NULL))" % (fmt, vc.branchname)
+                  " (terminalrev IS NULL))" % (fmt, brc_name)
 
         # Update fields
         brc.lastrev = vc.rev

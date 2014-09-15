@@ -39,7 +39,7 @@ class StructContainer(object):
             if self.__dict__[name] is None:
                 data.append(None)
             else:
-                data.append(to_unicode(self.__dict__[name]).encode('utf-8'))
+                data.append(to_unicode(self.__dict__[name]))
         return data
 
     def set(self, *args):
