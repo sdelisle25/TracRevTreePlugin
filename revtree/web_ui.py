@@ -67,13 +67,19 @@ class QueryFilter(object):
         self._env = env
         self._repos = repos
 
-        self._filter_revisions = set()
+        self._filtered_revisions = set()
+
+        # Deleted branches, prepare revisions filter
+        self._deleted_revisions = set()
         for branch in repos.get_branches():
             if branch.terminalrev:
-                self._filter_revisions.update(branch.get_revisions())
+                self._deleted_revisions.update(branch.get_revisions())
 
         # Build internal representation
         self._build(query_info)
+
+    def filtered_revisions(self):
+        return self._filtered_revisions
 
     def _date_convert(self, date_str):
         try:
@@ -85,9 +91,23 @@ class QueryFilter(object):
             raise EmptyRangeError(excpt.message)
 
     def _filter_deleted_branches(self, flag, rev):
+        """
+        Filter deleted branch, if flag is True, accept all branches even if
+        deleted. Otherwise if revision is owned by deleted branch, revision
+        is rejected.
+
+        :param flag:
+        :param rev:
+        """
+
         if flag is True:
             return True
-        return False if rev in self._filter_revisions else True
+
+        if rev in self._deleted_revisions:
+            self._filtered_revisions.add(rev)
+            return False
+
+        return True
 
     def _build(self, query_info):
         for k, vals in query_info.iteritems():
@@ -167,6 +187,10 @@ class QueryFilter(object):
                       filter_deleted_branches=self._filter_deleted_branches)
         for idx, clause in enumerate(self._query_clauses):
             if eval(clause, params):
+                # Is revision has been filtered by an other clause, restore it
+                if revision in self._filtered_revisions:
+                    self._filtered_revisions.remove(revision)
+
                 return idx + 1, True
         return None, False
 
@@ -180,7 +204,7 @@ class FloatOption(Option):
        Option for real number is missing in Trac
     """
 
-    def accessor(self, section, name, default=''):
+    def accessor(self, section, name, default=0.0):
         """Return the value of the specified option as float.
 
         If the specified option can not be converted to a float, a
@@ -189,12 +213,10 @@ class FloatOption(Option):
         Valid default input is a string or a float. Returns an float.
         """
         value = section.get(name, default)
-        if not value:
-            return 0.0
         try:
             return float(value)
         except ValueError:
-            raise ConfigurationError('expected real number, got %s' %
+            raise ConfigurationError('Expected real number, got %s' % \
                                      repr(value))
 
 
@@ -405,18 +427,14 @@ class RevtreeModule(Component):
         except Exception as e:
             raise TracError("Invalid revision log request: %s" % e)
 
-    def _process_query(self,
-                       repos,
-                       query,
-                       timebase,
-                       style='compact'):
-        '''
+    def _process_query(self, repos, query, timebase):
+        """
 
         :param repos:
         :param query:
         :param timebase:
-        :param style:
-        '''
+        """
+
         # REMARK: use set assert not duplicated element
         svgbranches = set()
         revisions = []
@@ -424,9 +442,6 @@ class RevtreeModule(Component):
         # Filtered revisions
         filtered_revisions = set()
         for rev_item in repos.get_revisions():
-#             if rev_item.revision in filter_revisions:
-#                 continue
-
             clause_idx, result = query.eval(revision=rev_item.revision,
                                             date=int(rev_item.date),
                                             timebase=timebase,
@@ -444,6 +459,8 @@ class RevtreeModule(Component):
 
             # Add revision and associated clause
             revisions.append((rev_item.revision, clause_idx))
+
+        filtered_revisions = query.filtered_revisions()
 
         return svgbranches, revisions, filtered_revisions
 
