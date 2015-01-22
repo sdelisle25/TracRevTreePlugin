@@ -9,6 +9,7 @@ from trac.core import Component, implements
 from trac.config import Option
 import re
 
+
 class PostCommit(Component):
 
     """Register to repository hook system the post-commit hook, invoked to

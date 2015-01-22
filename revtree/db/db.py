@@ -143,10 +143,11 @@ class DBUpdater(DBMixing):
             revisions.append(int(rev))
         revisions.sort(reverse=False)
 
-        # Theorical revision range
         revisions_range = set()
-        for rev in xrange(revisions[0], revisions[-1]):
-            revisions_range.add(rev)
+        if revisions:
+            # Theorical revision range
+            for rev in xrange(revisions[0], revisions[-1]):
+                revisions_range.add(rev)
 
         # Use set for better performance
         revisions = set(revisions)
