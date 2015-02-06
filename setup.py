@@ -26,7 +26,7 @@ setup(
     license='BSD',
     url='http://trac-hacks.org/wiki/RevtreePlugin',
     keywords="trac revision svg graphical tree browser visual",
-    install_requires=['Trac>=1.1.3', 'Trac<1.2'],
+    install_requires=['Trac>=1.0.0', 'Trac<1.2'],
     packages=find_packages(exclude=['ez_setup', '*.tests*', '*.enhancers.*']),
     package_data={
         'revtree': [
