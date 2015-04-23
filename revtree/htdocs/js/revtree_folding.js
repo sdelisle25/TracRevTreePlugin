@@ -6,15 +6,6 @@
     if (snap == undefined)
       snap = false;
 
-    if($(".uncollapsed").length == 0) {
-      $("#content").css("float", "none");
-      $(".buttons").css("float", "none");
-    }
-    else {
-      $("#content").css("float", "left")
-      $(".buttons").css("float", "right");
-    }
-
     var count = 1;
     return this.each(function() {
       // Use first child <a> as a trigger, or generate a trigger from the text
@@ -30,15 +21,6 @@
       trigger.click(function() {
         var ctrl = $(this.parentNode.parentNode).toggleClass("collapsed uncollapsed");
         var name = ctrl.attr("name");
-
-        if($(".uncollapsed").length == 0) {
-          $("#content").css("float", "none");
-          $(".buttons").css("float", "none");
-        }
-        else {
-          $("#content").css("float", "left")
-          $(".buttons").css("float", "right");
-        }
 
         // Send filter state if collapsed or not
         var data = {}

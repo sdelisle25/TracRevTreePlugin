@@ -53,29 +53,26 @@ class DBMixing(object):
         if installed is None:
             self.env.log.info('Installing Revtree plugin schema %s' % db_version)
             db_connector, _ = DatabaseManager(self.env)._get_connector()
-            db = self._get_db(db)
-            cursor = db.cursor()
+            with self.env.db_transaction as db:
+                for table in schema:
+                    for stmt in db_connector.to_sql(table):
+                        db(stmt)
 
-            for table in schema:
-                for stmt in db_connector.to_sql(table):
-                    cursor.execute(stmt)
-
-            self.set_installed_version(db, db_version)
+                self.set_installed_version(db, db_version)
             self.env.log.info('Installation of %s successful.' % db_version)
-            db.commit()
             return
 
         # Upgrade tables schema
         self.env.log.debug('Upgrading schema for "%s".' % type(self).__name__)
         for version, fn in self.get_schema_functions():
             if version > installed:
-                self.env.log.info('Upgrading TracForm plugin schema to %s' % version)
+                self.env.log.info('Upgrading RevTree plugin schema to %s' % version)
                 self.env.log.info('- %s: %s' % (fn.__name__, fn.__doc__))
-                db = self._get_db(db)
-                cursor = db.cursor()
-                fn(self.env, cursor)
-                self.set_installed_version(db, version)
-                installed = version
+                with self.env.db_transaction as db:
+                    cursor = db.cursor()
+                    fn(self.env, cursor)
+                    self.set_installed_version(db, version)
+                    installed = version
                 self.env.log.info('Upgrade to %s successful.' % version)
 
     def get_installed_version(self, db):
@@ -98,26 +95,23 @@ class DBMixing(object):
         self.set_system_value(db, self.plugin_name + '_version', version)
 
     def get_system_value(self, db, key, default=None):
-        db = self._get_db(db)
-        cursor = db.cursor()
-        cursor.execute("SELECT value FROM system WHERE name=%s", (key,))
-        row = cursor.fetchone()
+        with self.env.db_query as db:
+            cursor = db.cursor()
+            cursor.execute("SELECT value FROM system WHERE name=%s", (key,))
+            row = cursor.fetchone()
         return row and row[0]
 
     def set_system_value(self, db, key, value):
-        """Atomic UPSERT db transaction to save TracForms version."""
-        db = self._get_db(db)
-        cursor = db.cursor()
-        cursor.execute(
-                "UPDATE system SET value=%s WHERE name=%s", (value, key))
-        cursor.execute("SELECT value FROM system WHERE name=%s", (key,))
-        if not cursor.fetchone():
+        """Atomic UPSERT db transaction to save RevTree version."""
+        with self.env.db_transaction as db:
+            cursor = db.cursor()
             cursor.execute(
-                "INSERT INTO system(name, value) VALUES(%s, %s)", (key, value))
-
-    # Low level database connection management
-    def _get_db(self, db=None):
-        return db or self.env.get_db_cnx()
+                    "UPDATE system SET value=%s WHERE name=%s", (value, key))
+            cursor.execute("SELECT value FROM system WHERE name=%s", (key,))
+            if not cursor.fetchone():
+                cursor.execute(
+                    "INSERT INTO system(name, value) VALUES(%s, %s)",
+                    (key, value))
 
 
 class DBUpdater(DBMixing):
@@ -143,10 +137,11 @@ class DBUpdater(DBMixing):
             revisions.append(int(rev))
         revisions.sort(reverse=False)
 
-        # Theorical revision range
         revisions_range = set()
-        for rev in xrange(revisions[0], revisions[-1]):
-            revisions_range.add(rev)
+        if revisions:
+            # Theorical revision range
+            for rev in xrange(revisions[0], revisions[-1]):
+                revisions_range.add(rev)
 
         # Use set for better performance
         revisions = set(revisions)
@@ -173,7 +168,7 @@ class DBUpdater(DBMixing):
                             str(revrange))
 
         try:
-            # Build tags table
+            # Build tags table
             tags = self.repos.tags()
             for tag in tags.values():
                 # Verify tag do not exist

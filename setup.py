@@ -15,18 +15,18 @@
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracRevtreePlugin'
-VERSION = '2.0'
+VERSION = '2.0.4'
 
 setup(
     name=PACKAGE,
     version=VERSION,
     description='Revision graph visualizer for the Trac VCS browser',
     author='Emmanuel Blot',
-    author_email='emmanuel.blot@free.fr',
+    author_email='sylvain.delisle25@gmail.com',
     license='BSD',
-    url='http://trac-hacks.org/wiki/RevtreePlugin',
+    url='https://github.com/sdelisle25/TracRevTreePlugin.git',
     keywords="trac revision svg graphical tree browser visual",
-    install_requires=['Trac>=0.12dev', 'Trac<1.2'],
+    install_requires=['Trac>=1.0.0', 'Trac<1.2'],
     packages=find_packages(exclude=['ez_setup', '*.tests*', '*.enhancers.*']),
     package_data={
         'revtree': [

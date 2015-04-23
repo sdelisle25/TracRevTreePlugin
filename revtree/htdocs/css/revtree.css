@@ -70,19 +70,28 @@ div.revtree div#errormsg {
   border-width: 0;
   margin-bottom: 1em;
   margin-top: 0.6em;
+  margin-left: 0em;
   margin-right: 0.5em;
   min-width: 0px;
 
-/* REMARK: important avoid label overlapping */
+  /* REMARK: important avoid label overlapping */
   float: left;
 }
 
 #query_form fieldset.uncollapsed {
-  clear: both;
-  float: none;
+  float: left;
   margin-bottom: 0.5em;
   margin-top: 0.5em;
+  margin-left: 0em;
+  margin-right: 0.5em;
   min-width: 220px;
+}
+
+#svg {
+  clear: both;
+  display: block;
+  padding-top: 1em;
+  margin-left: 20px;
 }
 
 #query_form #filters.uncollapsed {
@@ -92,7 +101,7 @@ div.revtree div#errormsg {
 .buttons {
   padding: 0;
   margin: 0;
-  float: right;
+  float: left;
 }
 
 .buttons input {
@@ -299,12 +308,6 @@ fieldset, select {
   background-position: center center;
   min-height: 16px;
   min-width: 16px;
-}
-
-#svg {
-  float: left;
-  padding-top: 1em;
-  margin-left: 20px;
 }
 
 /* Toolbox widget */

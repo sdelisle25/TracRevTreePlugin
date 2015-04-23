@@ -462,6 +462,7 @@ class RevtreeModule(Component):
 
         filtered_revisions = query.filtered_revisions()
 
+        filtered_revisions = set()
         return svgbranches, revisions, filtered_revisions
 
     def _process_query_filters_options(self, req, key, value):
