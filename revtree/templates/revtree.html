@@ -100,6 +100,12 @@
              });
 
              $("body h1").removeClass("blink");
+
+             /* Adjust toolbox position with footer position */
+             var bottom;
+
+             bottom = $(document).height() - $("#footer").offset().top;
+             $("#toolbox").css("bottom", bottom + 5);
            },
            error: function(xhr, ajaxOptions, thrownError) {
              if(xhr.status == 404) {
@@ -133,7 +139,7 @@
       <div id="tooltip_body"></div>
     </div>
 
-    <div class="toolbox">
+    <div id="toolbox" class="toolbox">
       <div id="nav-changeset" class="nav-changeset">
         <div class='nav-icon'></div>
         <button class="nav-dest" title="Goto destination (ctrl + d)"
