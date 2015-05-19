@@ -16,13 +16,14 @@
     <script type="text/javascript">
     //<![CDATA[
     jQuery(document).ready(function($) {
-      var warning_msg;
+      var warning_ctrl;
+
       initializeFilters();
 
       $("#nav-changeset").hide();
 
       $("#warning").hide();
-      warning_msg = $("#warning").html();
+      warning_ctrl = $("#warning").clone(true);
 
       $("#group").change(function() {
         $("#groupdesc").enable(this.selectedIndex != 0);
@@ -109,7 +110,9 @@
            },
            error: function(xhr, ajaxOptions, thrownError) {
              if(xhr.status == 404) {
-               $("#warning").html(warning_msg + xhr.responseText);
+               var ctrl;
+               ctrl = warning_ctrl.clone(true);
+               $("#warning").replaceWith(ctrl.append(xhr.responseText));
                $("#warning").show();
              }
              else {

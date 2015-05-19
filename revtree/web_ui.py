@@ -549,8 +549,9 @@ class RevtreeModule(Component):
         except EmptyRangeError as excpt:
             msg = _('Selected filters cannot '
                     'render a revision tree. %s' % excpt.message.encode('utf8'))
+            msg = msg.encode('UTF-8')
             req.send_response(404)
-            req.send_header('Content-Type', "text")
+            req.send_header('Content-Type', "text/html; charset=utf-8'")
             req.send_header('Content-Length', len(msg))
             req.write(msg)
         else:
