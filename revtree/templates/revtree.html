@@ -70,7 +70,7 @@
              field.css("font-family", data.fontfamily);
              field.css("font-size", data.fontsize);
 
-             tree.build();
+             tree.build(1.0);
              tree.render();
 
              $("#main :input").removeAttr("disabled");
@@ -125,7 +125,8 @@
       });
 
       // Simulate click on filter update button
-      $('#submit_filters').trigger('click')
+      $('#submit_filters').trigger('click');
+
     });
     // ]]>
     </script>
@@ -141,24 +142,25 @@
       </div>
       <div id="tooltip_body"></div>
     </div>
-
     <div id="toolbox" class="toolbox">
       <div id="nav-changeset" class="nav-changeset">
         <div class='nav-icon'></div>
-        <button class="nav-dest" title="Goto destination (ctrl + d)"
+        <button class="nav-dest" title="${_('Goto destination (ctrl + d)')}"
                 onclick="scroll_dest(event)"></button>
-        <button class="nav-src" title="Goto source (ctrl + s)"
+        <button class="nav-src" title="${_('Goto source (ctrl + s)')}"
                 onclick="scroll_src(event)"></button>
       </div>
       <div id="zoom" class="zoom">
         <div class='zoom-icon'></div>
-        <button class="zoom-in" title="Zoom In (ctrl + a)" onclick="zoom(1.05)">
-         +
-        </button>
-        <button class="zoom-out" title="Zoom Out (ctrl + z)" onclick="zoom(0.95)">
-        -
-        </button>
+        <button class="zoom-in" title="${_('Zoom In (ctrl + a)')}" onclick="zoom(1.05)">+</button>
+        <button class="zoom-out" title="${_('Zoom Out (ctrl + z)')}" onclick="zoom(0.95)">-</button>
       </div>
+      <div id="scale" class="scale">
+        <div class='scale-icon'></div>
+        <button class="scale-in" title="${_('Scale In (ctrl + q)')}" onclick="scale(1.20)">+</button>
+        <button class="scale-out" title="${_('Scale out (ctrl + s)')}" onclick="scale(0.80)">-</button>
+      </div>
+
     </div>
 
     <div id="content" class="query" style='${"float: left;" if query_options=="false" or  query_filters=="false" else "float: none;"}'>

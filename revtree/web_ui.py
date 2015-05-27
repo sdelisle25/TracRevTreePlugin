@@ -641,16 +641,20 @@ class RevtreeModule(Component):
         add_script(req, 'revtree/js/revtree_changeset.js')
         add_script(req, 'revtree/js/revtree_tag.js')
         add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
-
+#        add_script(req, 'revtree/js/jquery.toolbar.js')
         add_script(req, 'revtree/js/jquery_md5.js')
 
+        # JQuery §UI
         Chrome(self.env).add_jquery_ui(req)
 
+        # Stylesheet
+#        add_stylesheet(req, 'revtree/css/jquery.toolbar.css')
+#        add_stylesheet(req, 'revtree/css/font-awesome.css')
+        add_stylesheet(req, 'revtree/css/revtree.css')
+
+        # Date format
         date_hint = get_date_format_hint(req.lc_time)
         data.update({'date_hint': date_hint})
-
-        # Stylesheet
-        add_stylesheet(req, 'revtree/css/revtree.css')
 
         # Scripts data
         add_script_data(req,
@@ -659,8 +663,10 @@ class RevtreeModule(Component):
                         authors=authors,
                         periods=periods,
                         date_hint_len=len(date_hint),
-                        date_hint_format=_('Format: %s') % date_hint,
+                        date_hint_format=_('Format: %s') % date_hint
                         )
+
+        # REMARK: add pseudo warning for front-end usage
         add_warning(req, " ")
 
         return 'revtree.html', data, None

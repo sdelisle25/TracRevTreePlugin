@@ -327,16 +327,16 @@ fieldset, select {
 }
 
 
-/* Zoom in/out widgets */
-.zoom-in {
+/* Zoom/scale in/out widgets */
+.zoom-in, .scale_in {
   top: 0;
 }
 
-.zoom-out {
+.zoom-out, .scale_out {
   bottom: 0;
 }
 
-.zoom {
+.zoom, .scale {
   display: block;
   color: #fff;
   font-weight: bold;
@@ -344,7 +344,7 @@ fieldset, select {
   padding: 2px;
 }
 
-.zoom button {
+.zoom button, .scale button {
   border-radius: 0 0 2px 2px;
   background-color: rgba(0, 60, 136, 0.5);
   border: medium none;
@@ -363,12 +363,16 @@ fieldset, select {
   cursor: pointer;
 }
 
-.zoom-icon {
+.zoom-icon, .scale-icon {
   display: block;
   background-image: url(../images/zoom-icon.png);
   background-repeat: no-repeat;
   background-position: center center;
   height: 1.375em;
+}
+
+.scale-icon {
+  background-image: url(../images/scale-icon.png);
 }
 
 /* Navigation changeset widgets */

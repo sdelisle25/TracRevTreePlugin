@@ -143,7 +143,6 @@
       this._maxchgextent[1] = this.chgset_diam;
     }
 
-    /* @@ SD predicated values to delete ? */
     /* x axis */
     if(this._extent[0] < extent[0])
       this._extent[0] = extent[0];
@@ -173,12 +172,13 @@
   RevTreeBranch.prototype.get_slot = function(revision)
   {
     var x, y, maxextent;
+    var scale = 3 * this._parent.scale;
 
     /* Compute next position for changeset */
     x = this._slot_position[0];
 
     if(this._style == 'compact') {
-        this._slot_position[1] = this._slot_position[1] + 3 * this._maxchgextent[1];
+        this._slot_position[1] = this._slot_position[1] + scale * this._maxchgextent[1];
 
         y = this._slot_position[1];
     }
@@ -187,11 +187,11 @@
       maxextent = this.chgset_diam;
 
       if(revision == 0) {
-        y = this._slot_position[1] + 3 * maxextent;
+        y = this._slot_position[1] + scale * maxextent;
       }
       else {
         y = this._parent.changeset_offset(revision);
-        y = (y + 2) * 3 * maxextent;
+        y = (y + 2) * scale * maxextent;
       }
 
       this._slot_position[1] = y;
@@ -215,7 +215,6 @@
   {
     var idx, lg;
 
-    // for(var idx in this._changesets) {
     /* Render groups */
     for(idx=0, lg=this._changesets.length; idx < lg; idx++) {
       /* Draw connection line */
@@ -227,8 +226,7 @@
   {
     var idx, lg;
 
-      /* Render changesets */
-    // @@ SD to delete for(var idx in this._changesets) {
+    /* Render changesets */
     for(idx=0, lg=this._changesets.length; idx < lg; idx++) {
       /* Draw connection line */
       this._changesets[idx].render(renderer, "layer2");
@@ -482,7 +480,7 @@
 
         hchg = new RevTreeChangeSet(br,
                                     {'rev': 0},
-                                    [hpos[0], hpos[1] + 3 * this.chgset_diam],
+                                    [hpos[0], hpos[1] + 3 * this._parent.scale * this.chgset_diam],
                                     false);
         schangesets.unshift(hchg);
 

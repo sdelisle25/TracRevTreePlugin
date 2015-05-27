@@ -5,13 +5,37 @@
   {
     var svgbox = $("#svgview");
 
+    window.zoom_ratio = window.zoom_ratio * ratio;
+
     /* REMARK: for safari to force redraw hide current SVG */
     svgbox.css('display', 'none');
     svgbox.attr("width", svgbox.attr("width") * ratio);
     svgbox.attr("height", svgbox.attr("height") * ratio);
     svgbox.css('display', 'block');
+
+    window.zoom_trigger = true
   }
   window.zoom = zoom;
+  window.zoom_ratio = 1.0;
+  window.zoom_trigger = false;
+
+  var scale = function(ratio)
+  {
+    var svgbox = $("#svgview");;
+    var width = svgbox.attr("width");
+    var height;
+
+    svgbox.css('display', 'none');
+    $("#svg").empty();
+    window.revtree.build(ratio);
+    window.revtree.render();
+
+    svgbox = $("#svgview");
+    svgbox.attr("width", svgbox.attr("width") * window.zoom_ratio);
+    svgbox.attr("height", svgbox.attr("height") * window.zoom_ratio);
+    svgbox.css('display', 'block');
+  }
+  window.scale = scale;
 
   var scroll_src = function(event) {
       var widget = $("[changeset='" + window.src_rev + "']");
@@ -49,6 +73,20 @@
       var ratio = 0;
       if (event.ctrlKey || event.metaKey) {
         switch(String.fromCharCode(event.which).toLowerCase()) {
+          /* scale in */
+          case 'q':
+            window.scale(1.05);
+            event.preventDefault();
+            event.stopPropagation();
+          break;
+
+          /* scale out */
+          case 's':
+            window.scale(0.95);
+            event.preventDefault();
+            event.stopPropagation();
+          break;
+
           /* Zoom In */
           case 'a':
             window.zoom(1.05);
@@ -290,6 +328,7 @@
     this._extent = [0, 0];
     this._makers = {};
     this._style = style;
+    this.scale = 1;
 
     this.max_rev = tree.max_rev.toString()
 
@@ -385,13 +424,15 @@
     return this._extent;
   }
 
-  RevTree.prototype.build = function()
+  RevTree.prototype.build = function(scale)
   {
     var brc_xpos = UNIT;
     var max = this._branches.length;
     var idx = 0;
     var extent;
     var xy;
+
+    this.scale = this.scale * scale;
 
     while(idx < max) {
       this._branches[idx].build(brc_xpos, UNIT);
@@ -498,11 +539,13 @@
       event.stopPropagation();
   };
 
-  RevTree.prototype.render = function()
+  RevTree.prototype.render = function(scale)
   {
     var layers = ["layer1", "layer2","layer3"];
     var height = this._extent[1].toFixed(1);
     var width = this._extent[0].toFixed(1);
+
+    this._makers = {};
 
     var renderer = new XMLWriter('UTF-8');
     renderer.writeDocType(' PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd"');
