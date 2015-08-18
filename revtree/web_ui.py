@@ -15,24 +15,23 @@
 from genshi.builder import tag
 from revtree.api import RevtreeSystem, EmptyRangeError
 from revtree.model import Repository
-from trac.config import Option, IntOption, BoolOption, ListOption, \
-    ConfigurationError
+from trac.admin.api import get_console_locale
+from trac.config import (Option, IntOption, BoolOption, ListOption,
+                         ConfigurationError)
 from trac.core import *
 from trac.perm import IPermissionRequestor
-from trac.util.datefmt import format_datetime, pretty_timedelta, to_timestamp, \
-    get_date_format_hint, parse_date
+from trac.util.datefmt import (format_datetime, pretty_timedelta, to_timestamp,
+                               get_date_format_hint, parse_date)
 from trac.util.translation import _
 from trac.web import IRequestFilter, IRequestHandler
 from trac.web.chrome import add_ctxtnav, add_script, add_stylesheet, \
     INavigationContributor, ITemplateProvider, add_script_data, add_warning, Chrome
 from trac.wiki import wiki_to_html
+from trac.util.text import to_unicode
 import cProfile
 import json
 import re
 import time
-
-
-from trac.admin.api import get_console_locale
 
 
 def profiler(func):
@@ -406,20 +405,25 @@ class RevtreeModule(Component):
         returning corresponding revision log information.
 
         :param req: Trac request object
+        :returns: template, template data, type of response
         '''
 
         try:
             rev = int(req.args['logrev'])
             repos = self.env.get_repository()
             chgset = repos.get_changeset(rev)
-            wikimsg = wiki_to_html(chgset.message, self.env, req, None,
-                                   True, False)
+            wikimsg = wiki_to_html(to_unicode(chgset.message),
+                                   self.env,
+                                   req,
+                                   None,
+                                   True,
+                                   False)
             data = {
                 'chgset': True,
                 'revision': rev,
                 'time': format_datetime(chgset.date).replace('()', ''),
                 'age': pretty_timedelta(chgset.date, None, 3600),
-                'author': chgset.author or 'anonymous',
+                'author': to_unicode(chgset.author) or u'anonymous',
                 'message': wikimsg
             }
 
