@@ -1,5 +1,15 @@
+/**
+* Main RevTree module
+* @file revtree.js
+* @author Neotion (c) 2014-2015
+*/
+
+
 (function() {
   var UNIT = 25;
+  var neorevtree = {}
+
+  window.neorevtree = neorevtree
 
   var zoom = function(ratio)
   {
@@ -19,7 +29,7 @@
   window.zoom_ratio = 1.0;
   window.zoom_trigger = false;
 
-  var scale = function(ratio)
+  window.scale = function(ratio)
   {
     var svgbox = $("#svgview");;
     var width = svgbox.attr("width");
@@ -35,7 +45,6 @@
     svgbox.attr("height", svgbox.attr("height") * window.zoom_ratio);
     svgbox.css('display', 'block');
   }
-  window.scale = scale;
 
   var scroll_src = function(event) {
       var widget = $("[changeset='" + window.src_rev + "']");
