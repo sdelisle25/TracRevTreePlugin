@@ -457,15 +457,12 @@ fieldset, select {
   opacity: 1;
 }
 
-#filters {
-  background-color: #FFF;
-}
-
-#options {
-  background-color: #FFF;
-}
-
 .fixed {
     position:fixed;
     top:5px;
+}
+#tools {
+  transition-property: top;
+  transition-duration: 2s, 1s, 0.5s, 0.5s;
+  transition-delay: 0s, 0.5s, 1s, 1.5s;
 }
