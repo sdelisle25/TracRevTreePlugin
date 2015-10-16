@@ -17,9 +17,9 @@
     //<![CDATA[
     jQuery(document).ready(function($) {
       var warning_ctrl;
-      var window_j;
-      var stickyEl;
-      var elTop;
+      var window_ctrl;
+      var tools_ctrl;
+      var tools_top;
 
       initializeFilters();
 
@@ -40,14 +40,14 @@
 
       $(".datepicker").datepicker();
 
-      window_j = $(window);
-      stickyEl = $("#tools");
-      elTop = stickyEl.offset().top;
+      window_ctrl = $(window);
+      tools_ctrl = $("#tools");
+      tools_top = tools_ctrl.offset().top;
 
       $(window).scroll(function() {
-        stickyEl.toggleClass('fixed', window_j.scrollTop() > elTop - 20);
-        if (window_j.scrollTop() > elTop - 10) {
-            $("#svg").css("margin-top", stickyEl.outerHeight(true) + "px");
+        tools_ctrl.toggleClass('fixed', window_ctrl.scrollTop() > tools_top - 25);
+        if (window_ctrl.scrollTop() > tools_top - 25) {
+            $("#svg").css("margin-top", tools_ctrl.outerHeight(true) + "px");
         }
         else {
           $("#svg").css("margin-top", "0px");
