@@ -593,8 +593,9 @@
 
     renderer.writeStartElement('svg:g');
     renderer.writeAttributeString("group", 'arrow');
-    renderer.writeAttributeString("onclick", "window.action_selector(this, "
+    renderer.writeAttributeString("onclick", "window.action_selector(evt, this, "
                                   + source_rev  + "," + dest_rev + ")");
+
     renderer.writeStartElement('svg:path');
     renderer.writeAttributeString("fill", 'none');
     renderer.writeAttributeString("stroke", color);
@@ -605,10 +606,14 @@
     renderer.writeEndElement();
   }
 
-  window.action_selector = function(widget, src_rev, dest_rev) {
+  window.action_selector = function(event, widget, src_rev, dest_rev) {
       var src, dest;
       var src_grp, dest_grp;
-      var tmp;
+      var tmp, widget;
+
+      /* Prevent default handler, and stop propagation */
+      event.preventDefault();
+      event.stopPropagation();
 
       src = window.revtree.get_changeset(src_rev);
       dest = window.revtree.get_changeset(dest_rev);
@@ -653,5 +658,7 @@
       $("#nav-changeset").show();
 
       $("#svg").show();
+
+      return false;
   };
 })();

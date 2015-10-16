@@ -47,6 +47,19 @@
 
       $(window).scroll(function() {
         stickyEl.toggleClass('fixed', window_j.scrollTop() > elTop - 10);
+        if (window_j.scrollTop() > elTop - 10) {
+            $("#svg").css("margin-top", stickyEl.outerHeight(true) + "px");
+        }
+        else {
+          $("#svg").css("margin-top", "0px");
+        }
+      });
+
+       $("#svg").click(function(event){
+        event.preventDefault();
+        event.stopPropagation();
+
+        window.abort_action_selector(event);
       });
 
       // Ajax request for filter processing
@@ -92,8 +105,8 @@
              $("#scale").show();
 
              /* REMARK: fix strange behavior float property not properly done */
-             $("#svgview").css('display', 'none');
-             $("#svgview").css('display', 'block');
+             $("#svgview").css("display", "none");
+             $("#svgview").css("display", "block");
 
              $("select[name$='_revision']").each(function() {
                var value = $(this).val();
@@ -157,7 +170,7 @@
       <div id="tooltip_body"></div>
     </div>
     <div id="tools">
-        <div id="content" class="query" style='${"float: left;" if query_options=="false" or  query_filters=="false" else "float: none;"}'>
+        <div id="query" class="query">
           <form id="query_form" method="post" action="${href.revtree('query')}"
                 py:with="field_names = sorted(fields.keys())">
             <fieldset id="filters" name="query_filters" class="${'collapsed' if query_filters=='true' else 'uncollapsed'}">
@@ -339,7 +352,7 @@
                 </tbody>
               </table>
             </fieldset>
-            <div class="buttons">
+            <div class="buttons" id="buttons">
               <input type="submit" name="update" value="${_('Update')}" id="submit_filters"/>
               <input type="submit" name="reset" value="${_('Reset')}" id="submit_reset"/>
             </div>
@@ -347,18 +360,7 @@
             <div id="svg_errormsg" class='svg_errormsg'></div>
           </form>
         </div>
-        <!--  <div id="svg" class="${'clear' if query_options=='true' and query_filters=='true' else 'svg'}">  -->
-        <section contextmenu="mymenu">
-          <menu type="context" id="mymenu">
-            <menu label="RevTree">
-              <menuitem label="ZoomIn" icon="/chrome/revtree/images/zoom-in-icon.png" onclick="window.zoom(1.05)"></menuitem>
-              <menuitem label="ZoomOut" icon="/chrome/revtree/images/zoom-out-icon.png" onclick="window.zoom(0.95);"></menuitem>
-              <menuitem label="Goto source" icon="/chrome/revtree/images/chgset-src-icon.png" onclick="window.scroll_src(event);"></menuitem>
-              <menuitem label="Goto dest" icon="/chrome/revtree/images/chgset-dest-icon.png" onclick="window.scroll_dest(event);"></menuitem>
-            </menu>
-          </menu>
-        </section>
-        <div id="toolbox" class="toolbox" style="float:left;">
+        <div id="toolbox" class="toolbox">
           <div id="nav-changeset" class="nav-changeset">
             <div class='nav-icon'></div>
             <button class="nav-dest" title="${_('Goto destination (ctrl + d)')}"
@@ -378,6 +380,16 @@
           </div>
         </div>
     </div>
+    <section contextmenu="mymenu">
+      <menu type="context" id="mymenu">
+        <menu label="RevTree">
+          <menuitem label="ZoomIn" icon="/chrome/revtree/images/zoom-in-icon.png" onclick="window.zoom(1.05)"></menuitem>
+          <menuitem label="ZoomOut" icon="/chrome/revtree/images/zoom-out-icon.png" onclick="window.zoom(0.95);"></menuitem>
+          <menuitem label="Goto source" icon="/chrome/revtree/images/chgset-src-icon.png" onclick="window.scroll_src(event);"></menuitem>
+          <menuitem label="Goto dest" icon="/chrome/revtree/images/chgset-dest-icon.png" onclick="window.scroll_dest(event);"></menuitem>
+        </menu>
+      </menu>
+    </section>
     <div id="svg" contextmenu="mymenu"></div>
   </body>
 </html>
