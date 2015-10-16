@@ -21,7 +21,6 @@
       var stickyEl;
       var elTop;
 
-
       initializeFilters();
 
       $("#nav-changeset").hide();
@@ -46,7 +45,7 @@
       elTop = stickyEl.offset().top;
 
       $(window).scroll(function() {
-        stickyEl.toggleClass('fixed', window_j.scrollTop() > elTop - 10);
+        stickyEl.toggleClass('fixed', window_j.scrollTop() > elTop - 20);
         if (window_j.scrollTop() > elTop - 10) {
             $("#svg").css("margin-top", stickyEl.outerHeight(true) + "px");
         }
