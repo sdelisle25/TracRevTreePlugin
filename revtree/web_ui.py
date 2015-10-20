@@ -653,7 +653,7 @@ class RevtreeModule(Component):
 
         # Stylesheet
 #        add_stylesheet(req, 'revtree/css/jquery.toolbar.css')
-#        add_stylesheet(req, 'revtree/css/font-awesome.css')
+        add_stylesheet(req, 'revtree/css/font-awesome.css')
         add_stylesheet(req, 'revtree/css/revtree.css')
 
         # Date format

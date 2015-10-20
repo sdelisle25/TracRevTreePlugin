@@ -7,9 +7,9 @@
 
 (function() {
   var UNIT = 25;
-  var neorevtree = {}
+  var neorevtree = {};
 
-  window.neorevtree = neorevtree
+  window.neorevtree = neorevtree;
 
   var zoom = function(ratio)
   {

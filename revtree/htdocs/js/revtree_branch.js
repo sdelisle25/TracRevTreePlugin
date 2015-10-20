@@ -2,6 +2,17 @@
   var UNIT = 25.;
 
   /* RevTreeBranch object */
+
+  /**: RevTreeBranch(parent, branch, style)
+   Private method for OTA generation.
+
+   :param package: package name to use for OTA generation
+   :type package: string
+   :param packages_path: packages path for storing generated OTA package
+   :type packages_path: string
+   :param ota_ids: list of OTA ids to generate
+   :type ota_ids: python list object
+   */
   function RevTreeBranch(parent, branch, style)
   {
     var idx, chgset, color;

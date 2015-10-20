@@ -31,6 +31,7 @@ setup(
     package_data={
         'revtree': [
             'htdocs/css/*.css',
+            'htdocs/fonts/*.*',
             'htdocs/js/*.js',
             'htdocs/images/*.gif',
             'templates/*.html'

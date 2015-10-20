@@ -352,7 +352,7 @@
               </table>
             </fieldset>
             <div class="buttons" id="buttons">
-              <input type="submit" name="update" value="${_('Update')}" id="submit_filters"/>
+              <input type="submit" class="fa fa-refresh" name="update" value="&#xf021; ${_('Update')}" id="submit_filters"/>
               <input type="submit" name="reset" value="${_('Reset')}" id="submit_reset"/>
             </div>
             <hr/>
@@ -373,22 +373,12 @@
             <button class="zoom-out" title="${_('Zoom Out (ctrl + z)')}" onclick="zoom(0.95)">-</button>
           </div>
           <div id="scale" class="scale">
-            <div class='scale-icon'></div>
+             <div class='scale-icon'></div>
             <button class="scale-in" title="${_('Scale In (ctrl + q)')}" onclick="scale(1.20)">+</button>
             <button class="scale-out" title="${_('Scale out (ctrl + s)')}" onclick="scale(0.80)">-</button>
           </div>
         </div>
     </div>
-    <section contextmenu="mymenu">
-      <menu type="context" id="mymenu">
-        <menu label="RevTree">
-          <menuitem label="ZoomIn" icon="/chrome/revtree/images/zoom-in-icon.png" onclick="window.zoom(1.05)"></menuitem>
-          <menuitem label="ZoomOut" icon="/chrome/revtree/images/zoom-out-icon.png" onclick="window.zoom(0.95);"></menuitem>
-          <menuitem label="Goto source" icon="/chrome/revtree/images/chgset-src-icon.png" onclick="window.scroll_src(event);"></menuitem>
-          <menuitem label="Goto dest" icon="/chrome/revtree/images/chgset-dest-icon.png" onclick="window.scroll_dest(event);"></menuitem>
-        </menu>
-      </menu>
-    </section>
     <div id="svg" contextmenu="mymenu"></div>
   </body>
 </html>
