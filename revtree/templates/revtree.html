@@ -20,6 +20,7 @@
       var window_ctrl;
       var tools_ctrl;
       var tools_top;
+      var tools_margin_left;
 
       initializeFilters();
 
@@ -42,19 +43,37 @@
 
       window_ctrl = $(window);
       tools_ctrl = $("#tools");
+      tools_margin_left = tools_ctrl.offset().left;
       tools_top = tools_ctrl.offset().top;
 
       $(window).scroll(function() {
-        tools_ctrl.toggleClass('fixed', window_ctrl.scrollTop() > tools_top - 25);
+        var sv_flag;
+        var sh_flag;
+
+        sv_flag = window_ctrl.scrollTop() > tools_top - 25;
+        sh_flag = window_ctrl.scrollLeft();
+
+        tools_ctrl.toggleClass('fixed', sv_flag);
         if (window_ctrl.scrollTop() > tools_top - 25) {
             $("#svg").css("margin-top", tools_ctrl.outerHeight(true) + "px");
         }
         else {
           $("#svg").css("margin-top", "0px");
         }
+
+        if(sv_flag) {
+          tools_ctrl.css("left", tools_margin_left + "px");
+        }
+
+        if(sh_flag && !sv_flag) {
+          tools_ctrl.css("margin-left", window_ctrl.scrollLeft() +"px");
+        }
+        else {
+           tools_ctrl.css("margin-left", "0px");
+        }
       });
 
-       $("#svg").click(function(event){
+      $("#svg").click(function(event){
         event.preventDefault();
         event.stopPropagation();
 
