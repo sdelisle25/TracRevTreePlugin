@@ -1,4 +1,6 @@
-(function() {
+"use strict";
+
+(function($) {
   var UNIT = 25.;
 
   /* RevTreeBranchHeader object  */
@@ -9,8 +11,8 @@
     this._path = path;
     this._rev = lastrev;
 
-    this._tw = RevTreeUtilsObj.textwidth(this._title);
-    this._th = RevTreeUtilsObj.textheight();
+    this._tw = window.RevTreeUtilsObj.textwidth(this._title);
+    this._th = window.RevTreeUtilsObj.textheight();
 
     this._w = this._tw + UNIT;
     this._h = this._th + UNIT;
@@ -19,12 +21,12 @@
     this._rech = this._th + UNIT;
 
     this._fillcolor = this._parent.fillcolor();
-    this._strokecolor = this._parent.strokecolor(); // @@ SD this._fillcolor.darker(1.5); // TODO must be set in parent
+    this._strokecolor = this._parent.strokecolor();
 
     this._url = this.url() + '/browser/' + this._path + '?rev=' + lastrev
-  };
+  }
 
-  /* Publish RevTreeBranchHeader object*/
+  /* Publish RevTreeBranchHeader object */
   window.RevTreeBranchHeader = RevTreeBranchHeader;
 
   RevTreeBranchHeader.prototype.url = function()
@@ -89,5 +91,4 @@
       renderer.writeEndElement();
     renderer.writeEndElement()
   };
-})();
-
+})(jQuery);

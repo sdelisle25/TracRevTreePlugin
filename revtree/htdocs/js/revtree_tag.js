@@ -1,4 +1,7 @@
-(function() {
+
+"use strict";
+
+(function($) {
   var UNIT = 25.;
 
   /* RevTreeTag class  */
@@ -9,14 +12,14 @@
 
     /* Colors */
     this._fillcolor = this._parent.fillcolor();
-    this._strokecolor = this._parent.strokecolor(); // @@ this._fillcolor.darker(1.5);
+    this._strokecolor = this._parent.strokecolor();
     this._textcolor = 1;
 
     /* Changeset extent */
-    this._htw = RevTreeUtilsObj.textwidth(this._name);
+    this._htw = window.RevTreeUtilsObj.textwidth(this._name);
 
     this._tw = this._htw;
-    this._th = RevTreeUtilsObj.textheight();
+    this._th = window.RevTreeUtilsObj.textheight();
 
     this._w = this._tw + UNIT;
     this._h = this._th + UNIT / 4;
@@ -24,7 +27,6 @@
     this._extent = [this._w, this._h];
 
     this._url = parent._url;
-
   };
 
   /* Publish RevTreeTag object */
@@ -79,4 +81,4 @@
   {
     return this._position;
   }
-})();
+})(jQuery);

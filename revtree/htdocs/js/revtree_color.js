@@ -1,4 +1,6 @@
-(function() {
+"use strict";
+
+(function($) {
   /*
 
   # HSV: Hue, Saturation, Value
@@ -47,9 +49,9 @@
 
   RevTreeColor.prototype.darker = function(k) {
     k = Math.pow(.7, arguments.length ? k : 1);
-    return new RevTreeColor(null, [~~(k * this._color[0]),
-                         ~~(k * this._color[1]),
-                         ~~(k * this._color[2])]);
+    return new window.RevTreeColor(null, [~~(k * this._color[0]),
+                                   ~~(k * this._color[1]),
+                                   ~~(k * this._color[2])]);
   };
 
   RevTreeColor.prototype.set = function(string)
@@ -105,6 +107,8 @@
     var vg = 14 * (digest.charCodeAt(1) % 10);
     var vb = 14 * (digest.charCodeAt(2) % 10);
 
+    digest = null;
+
     return [128 + vr, 128 + vg, 128 + vb];
   };
 
@@ -114,4 +118,4 @@
                    0xff - this._color[1],
                    0xff - this._color[2]];
   };
-})();
+})(jQuery);

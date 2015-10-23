@@ -1,17 +1,20 @@
-(function() {
+/**
+  RevTree branch module
+  @file revtree_branch.js
+  @author Neotion (c) 2014-2015
+ */
+
+"use strict";
+
+(function($) {
   var UNIT = 25.;
 
-  /* RevTreeBranch object */
-
   /**: RevTreeBranch(parent, branch, style)
-   Private method for OTA generation.
+   Object prototype to create revision tree branch.
 
-   :param package: package name to use for OTA generation
-   :type package: string
-   :param packages_path: packages path for storing generated OTA package
-   :type packages_path: string
-   :param ota_ids: list of OTA ids to generate
-   :type ota_ids: python list object
+   :param parent: branch parent obejct
+   :param branch: information for branch creation
+   :param style: branch style
    */
   function RevTreeBranch(parent, branch, style)
   {
@@ -33,8 +36,8 @@
     this._strokecolor = color.darker(1.5).rgb();
 
     /* Max revision text size */
-    this.tw = RevTreeUtilsObj.textwidth(this._parent.max_rev);
-    this.th = RevTreeUtilsObj.textheight();
+    this.tw = window.RevTreeUtilsObj.textwidth(this._parent.max_rev);
+    this.th = window.RevTreeUtilsObj.textheight();
 
     this.chgset_diam = (this.tw / 2 + UNIT / 3) * 2;
 
@@ -49,10 +52,10 @@
     this._changesets = new Array();
 
     /* Branch header */
-    this._branch_header = new RevTreeBranchHeader(this,
-                                              this._name,
-                                              this._path,
-                                              this._revisions[0].rev);
+    this._branch_header = new window.RevTreeBranchHeader(this,
+                                                         this._name,
+                                                         this._path,
+                                                         this._revisions[0].rev);
 
     /* Changesets */
     var head_rev;
@@ -62,7 +65,10 @@
         head_rev = true;
       }
 
-      chgset = new RevTreeChangeSet(this, this._revisions[idx], null, head_rev);
+      chgset = new window.RevTreeChangeSet(this,
+                                           this._revisions[idx],
+                                           null,
+                                           head_rev);
 
       if(this._first_chgset == null) {
         this._first_chgset = chgset;
@@ -620,7 +626,7 @@
   window.action_selector = function(event, widget, src_rev, dest_rev) {
       var src, dest;
       var src_grp, dest_grp;
-      var tmp, widget;
+      var tmp;
 
       /* Prevent default handler, and stop propagation */
       event.preventDefault();
@@ -645,8 +651,8 @@
       dest_grp += dest._parent._group;
       dest_grp += "']";
 
-      window.src_rev = src_rev;
-      window.dest_rev = dest_rev;
+      window.neorevtree.src_rev = src_rev;
+      window.neorevtree.dest_rev = dest_rev;
 
       $(src_grp).css("opacity", "1");
       $(dest_grp).css("opacity", "1");
@@ -672,4 +678,4 @@
 
       return false;
   };
-})();
+})(jQuery);

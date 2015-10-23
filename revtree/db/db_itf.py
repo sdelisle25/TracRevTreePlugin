@@ -55,9 +55,6 @@ class DBInterface(object):
             cursor = db.cursor()
             cursor.execute("SELECT * FROM revtree_revisions " \
                            "ORDER BY revision DESC")
-#             rows = cursor.fetchall()
-#             for row in rows:
-#                 yield RevisionEntry().set(*row)
             row = cursor.fetchone()
             while(row):
                 yield RevisionEntry().set(*row)
