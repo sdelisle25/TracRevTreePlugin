@@ -195,7 +195,7 @@
                 py:with="field_names = sorted(fields.keys())">
             <fieldset id="filters" name="query_filters" class="${'collapsed' if query_filters=='true' else 'uncollapsed'}">
               <legend class="foldable">Filters</legend>
-              <table summary="Query filters">
+              <table id="table_filters" summary="Query filters">
                 <tbody py:for="clause_num, constraints in enumerate(clauses)"
                        py:with="clause_pre = '%d_' % clause_num">
                   <tr style="${'display: none' if clause_num == 0 else None}">
@@ -203,6 +203,13 @@
                       <div class="trac-clause-lsep">&nbsp;<hr /></div>
                       <div class="trac-clause-msep">Or</div>
                       <div class="trac-clause-rsep">&nbsp;<hr /></div>
+                    </td>
+                  </tr>
+                  <tr class="trash">
+                    <td>
+                      <div class="inlinebuttons">
+                        <input type="button" onclick="removeClause(this);" title="${_('Delete clause')}" class="fa" value="&#xf1f8;"></input>
+                      </div>
                     </td>
                   </tr>
                   <tr><td class="trac-clause">

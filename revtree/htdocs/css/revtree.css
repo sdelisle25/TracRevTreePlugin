@@ -163,24 +163,28 @@ fieldset, select {
   float: left;
   width: 47%;
   line-height: 50%;
+  margin-top: 0px;
 }
 
 #filters td .trac-clause-sep {
   float: left;
   width: 100%;
   line-height: 50%;
+  margin-top: 0px;
 }
 
 #filters td .trac-clause-msep {
   float: left;
   text-align: center;
   width: 5%;
+  margin-top: 0px;
 }
 
 #filters td .trac-clause-rsep {
   float: right;
   width: 47%;
   line-height: 50%;
+  margin-top: 0px;
 }
 
 #filters td hr {
@@ -189,7 +193,7 @@ fieldset, select {
 }
 
 #filters tr {
-  height: 2em;
+  height: 0;
 }
 
 #filters th, #filters td, #filter tr {
@@ -221,6 +225,14 @@ fieldset, select {
 
 #filters div.inlinebuttons {
   display: inline;
+}
+.trash input {
+  border: none;
+}
+#filters div.trash {
+  display: inline;
+  float:left;
+  line-height: 50%;
 }
 
 #options td label {
