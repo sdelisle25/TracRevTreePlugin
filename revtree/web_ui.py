@@ -637,16 +637,17 @@ class RevtreeModule(Component):
         add_script(req, 'revtree/js/suggest.js')
         add_script(req, 'revtree/js/revtree_query.js')
         add_script(req, 'revtree/js/revtree_folding.js')
-
-        add_script(req, 'revtree/js/revtree_branch.js')
-        add_script(req, 'revtree/js/revtree_branchheader.js')
-        add_script(req, 'revtree/js/revtree_color.js')
-        add_script(req, 'revtree/js/revtree.js')
-        add_script(req, 'revtree/js/revtree_changeset.js')
-        add_script(req, 'revtree/js/revtree_tag.js')
-        add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
-#        add_script(req, 'revtree/js/jquery.toolbar.js')
         add_script(req, 'revtree/js/jquery_md5.js')
+        add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
+
+#         add_script(req, 'revtree/js/revtree_branch.js')
+#         add_script(req, 'revtree/js/revtree_branchheader.js')
+#         add_script(req, 'revtree/js/revtree_color.js')
+#         add_script(req, 'revtree/js/revtree.js')
+#         add_script(req, 'revtree/js/revtree_changeset.js')
+#         add_script(req, 'revtree/js/revtree_tag.js')
+#         add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
+#         add_script(req, 'revtree/js/jquery.toolbar.js')
 
         # JQuery §UI
         Chrome(self.env).add_jquery_ui(req)

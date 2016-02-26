@@ -446,6 +446,10 @@ fieldset, select {
   height: 100%;
 }
 
+.suggestions {
+  z-index: 1010;
+}
+
 #tools {
   z-index: 1000;
 }

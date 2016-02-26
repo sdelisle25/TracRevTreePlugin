@@ -15,7 +15,7 @@
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracRevtreePlugin'
-VERSION = '2.1'
+VERSION = '2.1.1'
 
 setup(
     name=PACKAGE,
@@ -30,13 +30,10 @@ setup(
     packages=find_packages(exclude=['ez_setup', '*.tests*', '*.enhancers.*']),
     package_data={
         'revtree': [
-            'htdocs/bootstrap-3.3.5/css/*.css',
-            'htdocs/bootstrap-3.3.5/css/*.map',
-            'htdocs/bootstrap-3.3.5/fonts/*',
-            'htdocs/bootstrap-3.3.5/js/*.js',
             'htdocs/css/*.css',
             'htdocs/fonts/*',
             'htdocs/js/*.js',
+            'htdocs/js/require-2.1.20/*.js',
             'htdocs/images/*.gif',
             'templates/*.html'
             'templates/*.svg'

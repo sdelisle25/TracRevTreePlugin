@@ -17,6 +17,7 @@
     var selectedIndex = -1;
     var results = null;
     var result;
+    var scroll_done;
 
     input.keydown(function(e) {
       switch(e.keyCode) {
@@ -116,7 +117,7 @@
         }
       }
 
-      return shorten_string.substring(0, idx)
+      return shorten_string.substring(0, idx);
     }
 
     function hide() {
@@ -130,10 +131,74 @@
       selectedIndex = -1;
     }
 
-    function move(index) {
+    function move(index, scroll)
+    {
+      var item_pos;
+      var items, item;
+      var scroll_pos, container;
+      var hcontainer, container_pos;
+      var hitem;
+
       if (!results) return;
+
+      /* List container */
+      container = $("ul", results);
       items = $("li", results);
       items.removeClass("selected");
+      $(items[index]).addClass("selected");
+      selectedIndex = index;
+
+      /* Get scroll position */
+      scroll_pos = container.scrollTop();
+
+      item = $(items[index]);
+      if(!item) {
+        return;
+      }
+
+      item_pos = item.position();
+      if(!item_pos) {
+        return;
+      }
+
+      hcontainer = results.height();
+      container_pos = results.position();
+      hitem = item.outerHeight(true);
+
+      scroll_done = true;
+      /* Item is above container */
+      if((item_pos.top + hitem) > hcontainer)
+      {
+        container.scrollTop(scroll_pos + hitem);
+      }
+      else
+      /* Item is below container */
+      if((item_pos.top + hitem) <= scroll_pos) {
+        container.scrollTop(scroll_pos - hitem);
+      }
+      else {
+        scroll_done = false;
+      }
+    }
+
+    function move_hover(event, index) {
+      var items, item;
+      var container;
+
+      event.preventDefault();
+
+      if (!results) return;
+
+      if(scroll_done === true) {
+        scroll_done = false;
+        return;
+      }
+
+      /* List container */
+      container = $("ul", results);
+      items = $("li", results);
+      items.removeClass("selected");
+
       $(items[index]).addClass("selected");
       selectedIndex = index;
     }
@@ -158,47 +223,39 @@
       params[paramName] = val;
 
       if(callback != null) {
-        params_ext = callback()
+        var params_ext = callback()
         for(var key in params_ext) {
           params[key] = params_ext[key]
         }
       }
 
       $.get(url, params, function(data) {
+        var items;
+        var parent;
+
         if (!data) { hide(); return; }
+
+        /* Suggest droplist */
         if (!results) {
           var offset = input.offset();
+
           results = $("<div>").addClass("suggestions").css({
             position: "absolute",
             minWidth: input.get(0).offsetWidth + "px",
-            top:  (offset.top + input.get(0).offsetHeight) + "px",
+            top: (offset.top + input.get(0).offsetHeight) + "px",
             left: offset.left + "px",
-            zIndex: 2
+            zIndex: 1010
           }).appendTo("body");
-          if ($.browser.msie) {
-            var iframe = $("<iframe style='display:none;position:absolute;" +
-              "filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);'" +
-              " class='iefix' src='javascript:false;' frameborder='0'" +
-              " scrolling='no'></iframe>").insertAfter(results);
-            setTimeout(function() {
-              var offset = $(results).offset();
-              iframe.css({
-                top: offset.top + "px",
-                right: (offset.left + results.get(0).offsetWidth) + "px",
-                bottom: (offset.top + results.get(0).offsetHeight) + "px",
-                left: offset.left + "px",
-                zIndex: 1
-              });
-              iframe.show();
-            }, 10);
-          }
         }
+
         results.html(data).fadeTo("fast", 0.92);
         items = $("li", results);
-        items
-          .hover(function() { move(items.index(this)) },
-                 function() { $(this).removeClass("selected") })
-          .click(function() { select(this); input.get(0).focus() });
+
+        // REMARK: disable hover becauseof side effects with direction keys
+        items.hover(function(event) { move_hover(event, items.index(this)) },
+                     function() { $(this).removeClass("selected") }).click(
+                       function() { select(this); input.get(0).focus() });
+
         move(0);
       }, 'html');
     }

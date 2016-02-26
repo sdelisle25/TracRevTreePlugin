@@ -13,7 +13,6 @@
 #
 
 from revtree import IRevtreeEnhancer, RevtreeEnhancer
-# @@ SD from revtree.svgview import SvgOperation, SvgGroup
 from trac.core import *
 
 __all__ = ['LogEnhancerModule']
