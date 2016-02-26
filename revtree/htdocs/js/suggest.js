@@ -153,7 +153,7 @@
         item = $(items[index]);
         item_pos = item.position();
 
-        if((item_pos.top > results.height()) || (item_pos.top <= scroll_pos))
+        if((item_pos.top > results.height()) || (item_pos.top < scroll_pos))
         {
           container.scrollTop(item_pos.top);
         }
