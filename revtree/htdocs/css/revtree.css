@@ -475,11 +475,19 @@ fieldset, select {
 }
 
 .fixed {
-    position:fixed;
-    top:5px;
+  position:fixed;
+  top:5px;
 }
 #tools {
-  transition-property: top;
-  transition-duration: 2s, 1s, 0.5s, 0.5s;
-  transition-delay: 0s, 0.5s, 1s, 1.5s;
+  transition: top 1s linear;
+  -webkit-transition: top 1s linear;
+  -moz-transition: top 1s linear;
+  -o-transition: top 1s linear;
 }
+
+/* #tools {
+  transition: top 10s;
+  -webkit-transition: top 10s;
+  -moz-transition: top 10s;
+  -o-transition: top 10s;
+} */

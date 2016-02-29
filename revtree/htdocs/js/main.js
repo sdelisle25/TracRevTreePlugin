@@ -68,12 +68,12 @@ require(['jquery', 'revtree'],
           var sv_flag;
           var sh_flag;
 
-          sv_flag = window_ctrl.scrollTop() > tools_top - 25;
+          sv_flag = window_ctrl.scrollTop() >= tools_top;
           sh_flag = window_ctrl.scrollLeft();
 
           tools_ctrl.toggleClass('fixed', sv_flag);
-          if (window_ctrl.scrollTop() > tools_top - 25) {
-              $("#svg").css("margin-top", tools_ctrl.outerHeight(true) + "px");
+          if (window_ctrl.scrollTop() >= tools_top) {
+            $("#svg").css("margin-top", tools_ctrl.outerHeight(true) + "px");
           }
           else {
             $("#svg").css("margin-top", "0px");
