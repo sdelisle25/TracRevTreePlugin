@@ -444,6 +444,7 @@ define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader'],
           head = false;
         }
 
+        /* Branches between source and destination changesets */
         xbranches = this._parent.xbranches(source, dest);
 
         /* find which points on the changeset widget are used for connections */
@@ -608,14 +609,30 @@ define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader'],
 
         renderer.writeStartElement('svg:g');
         renderer.writeAttributeString("group", 'arrow');
-        renderer.writeAttributeString("onclick", "window.action_selector(evt, this, "
-                                      + source_rev  + "," + dest_rev + ")");
+        renderer.writeAttributeString("changesets", "" + source_rev + "," + dest_rev);
+//        renderer.writeAttributeString("onclick", "window.action_selector(evt, this, "
+//                                      + source_rev  + "," + dest_rev + ")");
 
         renderer.writeStartElement('svg:path');
         renderer.writeAttributeString("fill", 'none');
         renderer.writeAttributeString("stroke", color);
         renderer.writeAttributeString("stroke-width", 4);
         renderer.writeAttributeString("marker-" + (head?'start':'end'), arrow)
+        renderer.writeAttributeString("d", d);
+        renderer.writeEndElement();
+        renderer.writeEndElement();
+
+        /* Test */
+        renderer.writeStartElement('svg:g');
+        renderer.writeAttributeString("group", 'arrow');
+        renderer.writeAttributeString("onclick", "window.action_selector(evt, this, "
+                                      + source_rev  + "," + dest_rev + ")");
+
+        renderer.writeStartElement('svg:path');
+        renderer.writeAttributeString("fill", 'none');
+        renderer.writeAttributeString("stroke", color);
+        renderer.writeAttributeString("stroke-width", 20);
+        renderer.writeAttributeString("stroke-opacity", 0);
         renderer.writeAttributeString("d", d);
         renderer.writeEndElement();
         renderer.writeEndElement();
@@ -633,6 +650,8 @@ define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader'],
           src = window.revtree.get_changeset(src_rev);
           dest = window.revtree.get_changeset(dest_rev);
           if((src == null) || (dest == null))return
+
+          $("#info_esc").addClass("loading-indicator-show");
 
           $("#svg").hide();
 
@@ -661,7 +680,7 @@ define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader'],
           $(src_grp + "> [group2]").css("opacity", "0.15");
           $(dest_grp + "> [group2]").css("opacity", "0.15");
 
-          $(widget).css("opacity", "1");
+          $("[changesets='" + src_rev + "," + dest_rev + "']").css("opacity", "1");
 
           tmp = src_grp + "[group2='" + src._parent._group + "']";
           $(tmp).css("opacity", "0.5");

@@ -197,7 +197,7 @@ fieldset, select {
 }
 
 #filters th, #filters td, #filter tr {
-  padding: 0 .2em;
+  padding-left: 0.2em;
   vertical-align: middle;
 }
 
@@ -226,13 +226,14 @@ fieldset, select {
 #filters div.inlinebuttons {
   display: inline;
 }
-.trash input {
-  border: none;
+
+.trash_offset {
+  padding-top: 8px;
 }
-#filters div.trash {
-  display: inline;
-  float:left;
-  line-height: 50%;
+
+.trash {
+  border: none;
+  padding: 0px;
 }
 
 #options td label {
@@ -491,3 +492,60 @@ fieldset, select {
   -moz-transition: top 10s;
   -o-transition: top 10s;
 } */
+
+.loading-indicator {
+  bottom: 70px;
+  opacity: 0;
+  /* display: none; */
+  height: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  text-align: center;
+
+  transition: all 2s;
+  -webkit-transition: all 2s;
+  -moz-transition: all 2s;
+  -o-transition: all 2s;
+  z-index: -100;
+  opacity: 0;
+}
+
+.loading-indicator-show {
+  z-index: 99;
+  opacity: 1;
+}
+
+.loading-indicator span {
+  background: rgba(0, 0, 0, 0.75) no-repeat center;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.loading-indicator span {
+  border-radius: 4px;
+  color: #fff;
+  display: inline-block;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 17px;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+/*
+@media screen {
+  .no-print, .no-print * {
+  }
+}
+
+@media print {
+  .no-print, .no-print * {
+    display: none !important;
+    height: 0   !important;
+  }
+}
+ */
+#query fieldset input.fa-12x {
+  font-size: 1.2em;
+}

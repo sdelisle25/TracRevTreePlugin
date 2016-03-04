@@ -103,6 +103,8 @@ require(['jquery', 'revtree'],
            event.preventDefault();
            event.stopPropagation();
 
+           $("#info_esc").removeClass("loading-indicator-show");
+
            $("#warning").hide();
            $("#svg_errormsg").hide();
            $("#nav-changeset").hide();

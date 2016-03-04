@@ -307,7 +307,7 @@
       var tbody = $(select).closest("tbody").parents("tbody").eq(0);
       var copy = tbody.clone(true);
 
-      $("div.trash input").show();
+      $(".trash_offset", copy).removeClass("trash_offset");
 
       $(select).closest("td").next().attr("colSpan", 4).end().remove();
       $("tr:first", copy).removeAttr("style");

@@ -28,13 +28,16 @@
     <!-- REMARK: the span below is used to compute font size -->
     <span id="metrics" class="metrics"></span>
     <div id="tooltip_connect" class="hidden"></div>
+    <div id="info_esc" class="loading-indicator loading-indicator-hidden">
+        <span class="animated">Press ESC to exit from changeset path selection mode</span>
+    </div>
     <div id="tooltip" class="hidden">
       <div id="tooltip_title">Changeset [<span id="tooltip_url"></span>]
         <span id="tooltip_clause"></span>
       </div>
       <div id="tooltip_body"></div>
     </div>
-    <div id="tools">
+    <div id="tools" class="noprint">
         <div id="query" class="query">
           <form id="query_form" method="post" action="${href.revtree('query')}"
                 py:with="field_names = sorted(fields.keys())">
@@ -51,9 +54,9 @@
                     </td>
                   </tr>
                   <tr class="trash">
-                    <td>
+                    <td class="${'trash_offset' if clause_num == 0 else ''}">
                       <div class="inlinebuttons">
-                        <input type="button" onclick="removeClause(this);" title="${_('Delete clause')}" class="fa" value="&#xf1f8;"></input>
+                        <input type="button" onclick="removeClause(this);" title="${_('Delete clause')}" class="fa fa-12x" value="&#xf1f8;"></input>
                       </div>
                     </td>
                   </tr>

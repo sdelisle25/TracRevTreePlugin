@@ -546,6 +546,8 @@ define(['jquery', 'revtree_branch'],
         function abort_action_selector(event) {
             $("#svg").hide();
 
+            $("#info_esc").removeClass("loading-indicator-show");
+
             $("[group]").css("opacity", "1");
             $("[group2]").css("opacity", "0.5");
 
