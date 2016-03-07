@@ -352,11 +352,11 @@ class RevtreeModule(Component):
             return self._process_request_completion(req)
 
         # Reset clauses
-        if req.args.get('reset'):
-            session_ctx = SessionContext(req)
-            session_ctx.clear()
-            req.redirect(req.href('revtree'))
-            return None
+#         if req.args.get('reset'):
+#             session_ctx = SessionContext(req)
+#             session_ctx.clear()
+#             req.redirect(req.href('revtree'))
+#             return None
 
         if 'logrev' in req.args:
             return self._process_log_request(req)
@@ -500,6 +500,19 @@ class RevtreeModule(Component):
         '''
         session_ctx = SessionContext(req)
 
+        # Reset clause
+        if req.args.get("reset"):
+            session_ctx.clear()
+
+            dump = json.dumps(dict())
+
+            # Send response
+            req.send_response(200)
+            req.send_header('Content-Type', "application/json")
+            req.send_header('Content-Length', len(dump))
+            req.write(dump);
+            return
+
         for key in ['query_options', 'query_filters']:
             if key not in req.args:
                 continue
@@ -591,6 +604,10 @@ class RevtreeModule(Component):
 
         session_ctx = SessionContext(req)
 
+        # Reset clause
+        if req.args.get("reset"):
+            session_ctx.clear()
+
         # Revisions
         revisions = self._get_ui_revisions()
 
@@ -639,15 +656,6 @@ class RevtreeModule(Component):
         add_script(req, 'revtree/js/revtree_folding.js')
         add_script(req, 'revtree/js/jquery_md5.js')
         add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
-
-#         add_script(req, 'revtree/js/revtree_branch.js')
-#         add_script(req, 'revtree/js/revtree_branchheader.js')
-#         add_script(req, 'revtree/js/revtree_color.js')
-#         add_script(req, 'revtree/js/revtree.js')
-#         add_script(req, 'revtree/js/revtree_changeset.js')
-#         add_script(req, 'revtree/js/revtree_tag.js')
-#         add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
-#         add_script(req, 'revtree/js/jquery.toolbar.js')
 
         # JQuery §UI
         Chrome(self.env).add_jquery_ui(req)

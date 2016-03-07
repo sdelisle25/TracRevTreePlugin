@@ -96,53 +96,52 @@ define(['jquery', 'revtree_branch'],
         /* Keyboard handler */
         var setKeyboardHandler = function(id) {
             $(document).bind('keydown', function(event) {
+              if(event.which == 27) {
+                abort_action_selector(event);
+              }
+            });
+
+            $(document).bind('keypress', function(event) {
                 var ratio = 0;
-                if (event.ctrlKey || event.metaKey) {
-                    switch (String.fromCharCode(event.which).toLowerCase()) {
-                    /* scale in */
-                    case 'q':
-                        scale(1.05);
-                        event.preventDefault();
-                        event.stopPropagation();
-                        break;
 
-                    /* scale out */
-                    case 's':
-                        scale(0.95);
-                        event.preventDefault();
-                        event.stopPropagation();
-                        break;
+                switch(String.fromCharCode(event.charCode)) {
+                  /* scale in */
+                  case 'q':
+                    scale(1.05);
+                    event.preventDefault();
+                    event.stopPropagation();
+                  break;
 
-                    /* Zoom In */
-                    case 'a':
-                        zoom(1.05);
-                        event.preventDefault();
-                        event.stopPropagation();
-                        break;
+                  /* scale out */
+                  case 's':
+                    scale(0.95);
+                    event.preventDefault();
+                    event.stopPropagation();
+                  break;
 
-                    /* Zoom Out */
-                    case 'z':
-                        zoom(0.95);
-                        event.preventDefault();
-                        event.stopPropagation();
-                        break;
+                  /* Zoom In */
+                  case '+':
+                    zoom(1.05);
+                    event.preventDefault();
+                    event.stopPropagation();
+                  break;
 
-                    /* Goto source changeset */
-                    case 's':
-                        scroll_src(event);
-                        break;
+                  /* Zoom Out */
+                  case '-':
+                    zoom(0.95);
+                    event.preventDefault();
+                    event.stopPropagation();
+                  break;
 
-                    /* Goto destination changeset */
-                    case 'd':
-                        scroll_dest(event);
-                        break;
-                    }
-                } else {
-                    switch (event.which) {
-                    case 27:
-                        abort_action_selector();
-                        break;
-                    }
+                  /* Goto source changeset */
+                  case '<':
+                    scroll_src(event);
+                  break;
+
+                  /* Goto destination changeset */
+                  case '>':
+                    scroll_dest(event);
+                  break;
                 }
             });
         };

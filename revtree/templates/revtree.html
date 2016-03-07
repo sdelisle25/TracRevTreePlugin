@@ -227,33 +227,29 @@
                 </tbody>
               </table>
             </fieldset>
-            <div class="buttons" id="buttons">
-              <input type="submit" class="fa fa-refresh" name="update" value="&#xf021; ${_('Update')}" id="submit_filters"/>
-              <input type="submit" name="reset" value="${_('Reset')}" id="submit_reset"/>
-            </div>
-            <hr/>
-            <div id="svg_errormsg" class='svg_errormsg'></div>
           </form>
         </div>
         <div id="toolbox" class="toolbox">
+          <div id="submit" class="submit">
+            <button class="fa" name="update" title="${_('Update')}" id="submit_filters"><span>&#xf021;</span></button>
+            <button class="fa" name="reset" title="${_('Reset to default values')}" id="submit_reset"><span>&#xf00d;</span></button>
+          </div>
           <div id="nav-changeset" class="nav-changeset">
-            <div class='nav-icon'></div>
-            <button class="nav-dest" title="${_('Goto destination (ctrl + d)')}"
+            <button class="nav-dest" title="${_('Goto destination')} &gt;"
                     onclick="neorevtree.scroll_dest(event)"> </button>
-            <button class="nav-src" title="${_('Goto source (ctrl + s)')}"
+            <button class="nav-src" title="${_('Goto source')} &lt;"
                     onclick="neorevtree.scroll_src(event)"> </button>
           </div>
           <div id="zoom" class="zoom">
-            <div class='zoom-icon'></div>
-            <button class="zoom-in" title="${_('Zoom In (ctrl + a)')}" onclick="neorevtree.zoom(1.05)">+</button>
-            <button class="zoom-out" title="${_('Zoom Out (ctrl + z)')}" onclick="neorevtree.zoom(0.95)">-</button>
+            <button class="fa fa-11x zoom-in" title="${_('Zoom In (+)')}" onclick="neorevtree.zoom(1.05)"><span>&#xf00e;</span></button>
+            <button class="fa fa-11x zoom-out" title="${_('Zoom Out (-)')}" onclick="neorevtree.zoom(0.95)"><span>&#xf010;</span></button>
           </div>
           <div id="scale" class="scale">
-             <div class='scale-icon'></div>
-            <button class="scale-in" title="${_('Scale In (ctrl + q)')}" onclick="neorevtree.scale(1.20)">+</button>
-            <button class="scale-out" title="${_('Scale out (ctrl + s)')}" onclick="neorevtree.scale(0.80)">-</button>
+            <button class="fa fa-11x scale-in" title="${_('Scale In (ctrl + q)')}" onclick="neorevtree.scale(1.20)"><span>&#xf160;</span></button>
+            <button class="fa fa-11x scale-out" title="${_('Scale out (ctrl + s)')}" onclick="neorevtree.scale(0.80)"><span>&#xf161;</span></button>
           </div>
         </div>
+        <div id="svg_errormsg" class='svg_errormsg'></div>
     </div>
     <div id="svg" contextmenu="mymenu"></div>
     <script type="text/javascript" data-main="${href.chrome('revtree/js/main.js')}"
