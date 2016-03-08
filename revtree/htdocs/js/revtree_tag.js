@@ -1,8 +1,8 @@
 
 "use strict";
 
-define(['jquery'],
-  function($) {
+define(['jquery', 'revtreeutils'],
+  function($, revtreeutils) {
     var UNIT = 25.;
 
     /* RevTreeTag class  */
@@ -17,10 +17,10 @@ define(['jquery'],
       this._textcolor = 1;
 
       /* Changeset extent */
-      this._htw = window.RevTreeUtilsObj.textwidth(this._name);
+      this._htw = revtreeutils.textwidth(this._name);
 
       this._tw = this._htw;
-      this._th = window.RevTreeUtilsObj.textheight();
+      this._th = revtreeutils.textheight();
 
       this._w = this._tw + UNIT;
       this._h = this._th + UNIT / 4;

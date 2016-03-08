@@ -6,6 +6,40 @@
  */
 
 "use strict";
+
+define('revtreeutils', ['jquery'], function($) {
+        function RevTreeUtils() {
+          /* Compute character max width/height */
+          var field = $("#metrics");
+
+          /* font character width average between bigger and small caracter */
+          field.text('M');
+          this._cw = field.width();
+          field.text('l');
+          this._cw = this._cw + field.width();
+          this._cw = this._cw / 2;
+
+          /* font caracter height */
+          this._ch = field.height();
+
+          field = null;
+        }
+
+        RevTreeUtils.prototype.textheight = function() {
+            return this._ch;
+        };
+
+        RevTreeUtils.prototype.textwidth = function(text) {
+            if (typeof text == "undefined") {
+                return 0;
+            }
+
+            return this._cw * text.length;
+        };
+
+        return new RevTreeUtils();
+     });
+
 define(['jquery', 'revtree_branch'],
     function($, RevTreeBranch) {
         var UNIT = 25;
@@ -278,7 +312,7 @@ define(['jquery', 'revtree_branch'],
             document.getElementById("tooltip_url").innerHTML = val;
             div.css("background-color", chgset.fillcolor());
 
-            var t = $("#tooltip").outerWidth()
+            var t = $("#tooltip").outerWidth();
 
             var logurl = "revtree/revtree_log/" + chgset._revision;
             $.ajax({
@@ -325,36 +359,6 @@ define(['jquery', 'revtree_branch'],
         window.revtree_mouseover = revtree_mouseover;
         window.revtree_mouseout = revtree_mouseout;
 
-        function RevTreeUtils() {
-            /* Compute character max width/height */
-            var field = $("#metrics");
-
-            /* font character width average between bigger and small caracter */
-            field.text('M');
-            this._cw = field.width();
-            field.text('l');
-            this._cw = this._cw + field.width();
-            this._cw = this._cw / 2;
-
-            /* font caracter height */
-            this._ch = field.height();
-
-            field = null;
-        }
-        ;
-
-        RevTreeUtils.prototype.textheight = function() {
-            return this._ch;
-        };
-
-        RevTreeUtils.prototype.textwidth = function(text) {
-            if (typeof text == "undefined") {
-                return 0;
-            }
-
-            return this._cw * text.length;
-        };
-
         /* RevTree object */
         function RevTree(tree, url, style) {
             this._branches = new Array();
@@ -366,9 +370,6 @@ define(['jquery', 'revtree_branch'],
             this.scale = 1;
 
             this.max_rev = tree.max_rev.toString()
-
-            /* Publish RevTreeUtils object */
-            window.RevTreeUtilsObj = new RevTreeUtils();
 
             this._changesets = new Array();
             this._revisions = [];

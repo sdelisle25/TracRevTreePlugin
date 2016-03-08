@@ -6,8 +6,9 @@
 
 "use strict";
 
-define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader'],
-    function($, RevTreeChangeSet, RevTreeColor, RevTreeBranchHeader) {
+define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader', 'revtreeutils'],
+    function($, RevTreeChangeSet, RevTreeColor,
+             RevTreeBranchHeader, revtreeutils) {
       var UNIT = 25.;
 
       /**: RevTreeBranch(parent, branch, style)
@@ -37,8 +38,8 @@ define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader'],
         this._strokecolor = color.darker(1.5).rgb();
 
         /* Max revision text size */
-        this.tw = window.RevTreeUtilsObj.textwidth(this._parent.max_rev);
-        this.th = window.RevTreeUtilsObj.textheight();
+        this.tw = revtreeutils.textwidth(this._parent.max_rev);
+        this.th = revtreeutils.textheight();
 
         this.chgset_diam = (this.tw / 2 + UNIT / 3) * 2;
 

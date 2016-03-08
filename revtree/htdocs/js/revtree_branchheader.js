@@ -1,7 +1,7 @@
 "use strict";
 
-define(['jquery'],
-    function($) {
+define(['jquery', 'revtreeutils'],
+    function($, revtreeutils) {
       var UNIT = 25.;
 
       /* RevTreeBranchHeader object  */
@@ -12,8 +12,8 @@ define(['jquery'],
         this._path = path;
         this._rev = lastrev;
 
-        this._tw = window.RevTreeUtilsObj.textwidth(this._title);
-        this._th = window.RevTreeUtilsObj.textheight();
+        this._tw = revtreeutils.textwidth(this._title);
+        this._th = revtreeutils.textheight();
 
         this._w = this._tw + UNIT;
         this._h = this._th + UNIT;
