@@ -129,53 +129,57 @@ define(['jquery', 'revtree_branch'],
 
         /* Keyboard handler */
         var setKeyboardHandler = function(id) {
-            $(document).bind('keydown', function(event) {
+            $("body").bind('keydown', function(event) {
               if(event.which == 27) {
                 abort_action_selector(event);
               }
             });
 
-            $(document).bind('keypress', function(event) {
+            $("body").keypress(function(event) {
                 var ratio = 0;
+                var body;
 
-                switch(String.fromCharCode(event.charCode)) {
-                  /* scale in */
-                  case 'q':
-                    scale(1.05);
-                    event.preventDefault();
-                    event.stopPropagation();
-                  break;
+                body = $('body')[0];
+                if(event.target == body) {
+                    switch(String.fromCharCode(event.charCode)) {
+                      /* scale in */
+                      case 'q':
+                        scale(1.05);
+                        event.preventDefault();
+                        event.stopPropagation();
+                      break;
 
-                  /* scale out */
-                  case 's':
-                    scale(0.95);
-                    event.preventDefault();
-                    event.stopPropagation();
-                  break;
+                      /* scale out */
+                      case 's':
+                        scale(0.95);
+                        event.preventDefault();
+                        event.stopPropagation();
+                      break;
 
-                  /* Zoom In */
-                  case '+':
-                    zoom(1.05);
-                    event.preventDefault();
-                    event.stopPropagation();
-                  break;
+                      /* Zoom In */
+                      case '+':
+                        zoom(1.05);
+                        event.preventDefault();
+                        event.stopPropagation();
+                      break;
 
-                  /* Zoom Out */
-                  case '-':
-                    zoom(0.95);
-                    event.preventDefault();
-                    event.stopPropagation();
-                  break;
+                      /* Zoom Out */
+                      case '-':
+                        zoom(0.95);
+                        event.preventDefault();
+                        event.stopPropagation();
+                      break;
 
-                  /* Goto source changeset */
-                  case '<':
-                    scroll_src(event);
-                  break;
+                      /* Goto source changeset */
+                      case '<':
+                        scroll_src(event);
+                      break;
 
-                  /* Goto destination changeset */
-                  case '>':
-                    scroll_dest(event);
-                  break;
+                      /* Goto destination changeset */
+                      case '>':
+                        scroll_dest(event);
+                      break;
+                    }
                 }
             });
         };
