@@ -32,6 +32,11 @@ class DBInterface(object):
                 self.env.db_query("SELECT DISTINCT branch FROM " \
                                   "revtree_branches")]
 
+    def get_branch_names_with_prop(self, prop="terminalrev"):
+        return [b for b in
+                self.env.db_query("SELECT branch, %s FROM " \
+                                  "revtree_branches GROUP BY branch" % prop)]
+
     def get_branch(self, name, rev=None):
         rows = self.env.db_query("SELECT * FROM revtree_branches " \
                                  "WHERE branch='%s'" % name)

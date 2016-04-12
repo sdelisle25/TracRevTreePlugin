@@ -388,7 +388,7 @@ class RevtreeModule(Component):
         path = req.args.get('autocompletion', '').strip()
 
         branches = self._get_ui_branches()
-        items = [tag.li(brc) for brc in branches if brc.startswith(path)]
+        items = [tag.li(brc, class_="deleted" if deleted else "") for brc, deleted in branches if brc.startswith(path)]
         elem = tag.ul(items)
 
         xhtml = elem.generate().render('xhtml', encoding='utf-8')
@@ -612,7 +612,7 @@ class RevtreeModule(Component):
         revisions = self._get_ui_revisions()
 
         # Branches
-        branches = self._get_ui_branches(reverse=False)
+        branches = [b for b, d in self._get_ui_branches(reverse=False)]
 
         # Authors
         authors = self._get_ui_authors()
@@ -727,8 +727,10 @@ class RevtreeModule(Component):
         return authors
 
     def cmp_func(self, a, b):
-        a_re = self.reg_expr.match(a)
-        b_re = self.reg_expr.match(b)
+        b1, b2 = a[0], b[0]
+
+        a_re = self.reg_expr.match(b1)
+        b_re = self.reg_expr.match(b2)
 
         if b_re and a_re:
             a_int = int(a_re.group(1))
@@ -736,14 +738,15 @@ class RevtreeModule(Component):
 
             if a_int != b_int:
                 return cmp(a_int, b_int)
-        return cmp(a, b)
+        return cmp(b1, b2)
 
     def _get_ui_branches(self, reverse=False):
         """Generates the list of displayable branches """
         repos = Repository(self.env)
 
-        branches = repos.get_branch_names()
+        branches = repos.get_branch_names_with_prop()
+
         branches = sorted(branches, reverse=reverse, cmp=self.cmp_func)
-        branches.insert(0, 'all')
+        branches.insert(0, ('all', None))
 
         return branches

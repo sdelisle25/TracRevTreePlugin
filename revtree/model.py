@@ -467,6 +467,9 @@ class Repository(object):
     def get_branch_names(self):
         return self._db_itf.get_branch_names()
 
+    def get_branch_names_with_prop(self):
+        return self._db_itf.get_branch_names_with_prop()
+
     def get_branch(self, name, rev=None):
         return self._db_itf.get_branch(name, rev=rev)
 

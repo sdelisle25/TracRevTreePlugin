@@ -652,7 +652,7 @@ define(['jquery', 'revtree_changeset', 'revtree_color', 'revtree_branchheader', 
           dest = window.revtree.get_changeset(dest_rev);
           if((src == null) || (dest == null))return
 
-          $("#info_esc").addClass("loading-indicator-show");
+          $("#info_esc").addClass("indicator-esc-show");
 
           $("#svg").hide();
 

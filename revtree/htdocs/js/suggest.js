@@ -18,6 +18,7 @@
     var results = null;
     var result;
     var scroll_done;
+    var xhr;
 
     input.keydown(function(e) {
       switch(e.keyCode) {
@@ -217,6 +218,11 @@
       var val = input.val();
       if (val == prev) return;
       prev = val;
+
+      if(xhr && xhr.readyState != 4) {
+        xhr.abort();
+      }
+
       if (val.length < minChars) { hide(); return; }
       input.addClass("loading");
       var params = {};
@@ -229,7 +235,7 @@
         }
       }
 
-      $.get(url, params, function(data) {
+      xhr = $.get(url, params, function(data) {
         var items;
         var parent;
 

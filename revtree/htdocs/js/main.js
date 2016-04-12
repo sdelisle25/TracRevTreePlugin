@@ -40,6 +40,7 @@ require(['jquery', 'revtree'],
         var tools_ctrl;
         var tools_top;
         var tools_margin_left;
+        var xhr;
 
         initializeFilters();
 
@@ -192,7 +193,11 @@ require(['jquery', 'revtree'],
            event.preventDefault();
            event.stopPropagation();
 
-           $("#info_esc").removeClass("loading-indicator-show");
+           $("#info_esc").removeClass("indicator-esc-show");
+
+           if(xhr && xhr.readyState != 4) {
+             xhr.abort();
+           }
 
            $("#warning").hide();
            $("#svg_errormsg").hide();
@@ -203,7 +208,7 @@ require(['jquery', 'revtree'],
 
            $("body h1").addClass("blink");
 
-           $.ajax({
+           xhr = $.ajax({
              url: "",
              type: "POST",
              async: true,
