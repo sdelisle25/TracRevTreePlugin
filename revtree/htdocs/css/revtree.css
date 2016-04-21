@@ -212,7 +212,7 @@ fieldset, select {
 }
 
 #filters td.filter {
-  width: 80%;
+    /* width: 80%; */
 }
 
 #filters td.and {
