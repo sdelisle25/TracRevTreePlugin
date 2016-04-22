@@ -15,24 +15,23 @@
 from genshi.builder import tag
 from revtree.api import RevtreeSystem, EmptyRangeError
 from revtree.model import Repository
-from trac.config import Option, IntOption, BoolOption, ListOption, \
-    ConfigurationError
+from trac.admin.api import get_console_locale
+from trac.config import (Option, IntOption, BoolOption, ListOption,
+                         ConfigurationError)
 from trac.core import *
 from trac.perm import IPermissionRequestor
-from trac.util.datefmt import format_datetime, pretty_timedelta, to_timestamp, \
-    get_date_format_hint, parse_date
+from trac.util.datefmt import (format_datetime, pretty_timedelta, to_timestamp,
+                               get_date_format_hint, parse_date)
 from trac.util.translation import _
 from trac.web import IRequestFilter, IRequestHandler
 from trac.web.chrome import add_ctxtnav, add_script, add_stylesheet, \
     INavigationContributor, ITemplateProvider, add_script_data, add_warning, Chrome
 from trac.wiki import wiki_to_html
+from trac.util.text import to_unicode
 import cProfile
 import json
 import re
 import time
-
-
-from trac.admin.api import get_console_locale
 
 
 def profiler(func):
@@ -353,11 +352,11 @@ class RevtreeModule(Component):
             return self._process_request_completion(req)
 
         # Reset clauses
-        if req.args.get('reset'):
-            session_ctx = SessionContext(req)
-            session_ctx.clear()
-            req.redirect(req.href('revtree'))
-            return None
+#         if req.args.get('reset'):
+#             session_ctx = SessionContext(req)
+#             session_ctx.clear()
+#             req.redirect(req.href('revtree'))
+#             return None
 
         if 'logrev' in req.args:
             return self._process_log_request(req)
@@ -389,7 +388,7 @@ class RevtreeModule(Component):
         path = req.args.get('autocompletion', '').strip()
 
         branches = self._get_ui_branches()
-        items = [tag.li(brc) for brc in branches if brc.startswith(path)]
+        items = [tag.li(brc, class_="deleted" if deleted else "") for brc, deleted in branches if brc.startswith(path)]
         elem = tag.ul(items)
 
         xhtml = elem.generate().render('xhtml', encoding='utf-8')
@@ -406,20 +405,25 @@ class RevtreeModule(Component):
         returning corresponding revision log information.
 
         :param req: Trac request object
+        :returns: template, template data, type of response
         '''
 
         try:
             rev = int(req.args['logrev'])
             repos = self.env.get_repository()
             chgset = repos.get_changeset(rev)
-            wikimsg = wiki_to_html(chgset.message, self.env, req, None,
-                                   True, False)
+            wikimsg = wiki_to_html(to_unicode(chgset.message),
+                                   self.env,
+                                   req,
+                                   None,
+                                   True,
+                                   False)
             data = {
                 'chgset': True,
                 'revision': rev,
                 'time': format_datetime(chgset.date).replace('()', ''),
                 'age': pretty_timedelta(chgset.date, None, 3600),
-                'author': chgset.author or 'anonymous',
+                'author': to_unicode(chgset.author) or u'anonymous',
                 'message': wikimsg
             }
 
@@ -496,6 +500,19 @@ class RevtreeModule(Component):
         '''
         session_ctx = SessionContext(req)
 
+        # Reset clause
+        if req.args.get("reset"):
+            session_ctx.clear()
+
+            dump = json.dumps(dict())
+
+            # Send response
+            req.send_response(200)
+            req.send_header('Content-Type', "application/json")
+            req.send_header('Content-Length', len(dump))
+            req.write(dump);
+            return
+
         for key in ['query_options', 'query_filters']:
             if key not in req.args:
                 continue
@@ -549,8 +566,9 @@ class RevtreeModule(Component):
         except EmptyRangeError as excpt:
             msg = _('Selected filters cannot '
                     'render a revision tree. %s' % excpt.message.encode('utf8'))
+            msg = msg.encode('UTF-8')
             req.send_response(404)
-            req.send_header('Content-Type', "text")
+            req.send_header('Content-Type', "text/html; charset=utf-8'")
             req.send_header('Content-Length', len(msg))
             req.write(msg)
         else:
@@ -586,11 +604,15 @@ class RevtreeModule(Component):
 
         session_ctx = SessionContext(req)
 
+        # Reset clause
+        if req.args.get("reset"):
+            session_ctx.clear()
+
         # Revisions
         revisions = self._get_ui_revisions()
 
         # Branches
-        branches = self._get_ui_branches(reverse=False)
+        branches = [b for b, d in self._get_ui_branches(reverse=False)]
 
         # Authors
         authors = self._get_ui_authors()
@@ -632,24 +654,20 @@ class RevtreeModule(Component):
         add_script(req, 'revtree/js/suggest.js')
         add_script(req, 'revtree/js/revtree_query.js')
         add_script(req, 'revtree/js/revtree_folding.js')
-
-        add_script(req, 'revtree/js/revtree_branch.js')
-        add_script(req, 'revtree/js/revtree_branchheader.js')
-        add_script(req, 'revtree/js/revtree_color.js')
-        add_script(req, 'revtree/js/revtree.js')
-        add_script(req, 'revtree/js/revtree_changeset.js')
-        add_script(req, 'revtree/js/revtree_tag.js')
+        add_script(req, 'revtree/js/jquery_md5.js')
         add_script(req, 'revtree/js/XMLWriter-1.0.0-min.js')
 
-        add_script(req, 'revtree/js/jquery_md5.js')
-
+        # JQuery §UI
         Chrome(self.env).add_jquery_ui(req)
 
+        # Stylesheet
+#        add_stylesheet(req, 'revtree/css/jquery.toolbar.css')
+        add_stylesheet(req, 'revtree/css/font-awesome.css')
+        add_stylesheet(req, 'revtree/css/revtree.css')
+
+        # Date format
         date_hint = get_date_format_hint(req.lc_time)
         data.update({'date_hint': date_hint})
-
-        # Stylesheet
-        add_stylesheet(req, 'revtree/css/revtree.css')
 
         # Scripts data
         add_script_data(req,
@@ -658,8 +676,10 @@ class RevtreeModule(Component):
                         authors=authors,
                         periods=periods,
                         date_hint_len=len(date_hint),
-                        date_hint_format=_('Format: %s') % date_hint,
+                        date_hint_format=_('Format: %s') % date_hint
                         )
+
+        # REMARK: add pseudo warning for front-end usage
         add_warning(req, " ")
 
         return 'revtree.html', data, None
@@ -707,8 +727,10 @@ class RevtreeModule(Component):
         return authors
 
     def cmp_func(self, a, b):
-        a_re = self.reg_expr.match(a)
-        b_re = self.reg_expr.match(b)
+        b1, b2 = a[0], b[0]
+
+        a_re = self.reg_expr.match(b1)
+        b_re = self.reg_expr.match(b2)
 
         if b_re and a_re:
             a_int = int(a_re.group(1))
@@ -716,14 +738,15 @@ class RevtreeModule(Component):
 
             if a_int != b_int:
                 return cmp(a_int, b_int)
-        return cmp(a, b)
+        return cmp(b1, b2)
 
     def _get_ui_branches(self, reverse=False):
         """Generates the list of displayable branches """
         repos = Repository(self.env)
 
-        branches = repos.get_branch_names()
+        branches = repos.get_branch_names_with_prop()
+
         branches = sorted(branches, reverse=reverse, cmp=self.cmp_func)
-        branches.insert(0, 'all')
+        branches.insert(0, ('all', None))
 
         return branches

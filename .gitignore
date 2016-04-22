@@ -1,6 +1,9 @@
 # compiled sources
 *.pyc
 
+# egg info directories
+*.egg-info/
+
 # Eclipse projects
 .pydevproject
 .project

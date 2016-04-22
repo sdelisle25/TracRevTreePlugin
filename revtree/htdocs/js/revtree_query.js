@@ -85,6 +85,31 @@
 
   window.initializeFilters = function() {
     // Remove an existing row from the filters table
+    function removeClause(button) {
+      var tbody = $(button).closest("tbody");
+      var tr = $(button).closest("tr");
+
+      var add_clause = $("#add_clause", tbody);
+      if (add_clause.length) {
+        $("tr.actions td.and",
+          tbody.prev()).attr("colSpan", 2).after(add_clause.closest("td"));
+      }
+
+      tfilters = $("#table_filters").children('tbody');
+      if(tfilters.length > 1) {
+        tbody.remove();
+      }
+      else {
+        $("table.trac-clause tbody:not(:last-child)", tbody).remove();
+        $("#add_clause").attr("disabled", true);
+        $(".trash").hide();
+      }
+
+      $("#table_filters tbody:first tr:first").attr("style", "display: none");
+    }
+    window.removeClause = removeClause;
+
+    // Remove an existing row from the filters table
     function removeRow(button, propertyName) {
       var m = propertyName.match(/^(\d+)_(.*)$/);
       var clauseNum = m[1], field = m[2];
@@ -117,8 +142,10 @@
           tbody.remove();
           if (!ctbody.siblings().length && table.children().length == 1) {
             $("#add_clause").attr("disabled", true);
+            $(".trash").hide();
           }
         } else {
+          $(".trash").show();
           var add_clause = $("#add_clause", ctbody);
           if (add_clause.length)
             $("tr.actions td.and", ctbody.prev()).attr("colSpan", 2)
@@ -154,6 +181,8 @@
       if (this.selectedIndex < 1)
         return;
 
+      $(".trash").show();
+
       if (this.options[this.selectedIndex].disabled) {
         // IE doesn't support disabled options
         alert("A filter already exists for that property");
@@ -167,6 +196,9 @@
       var table = $(this).closest("table.trac-clause")[0];
       var tbody = $("tr." + propertyName, table).closest("tbody").eq(0);
       var tr = $("<tr>").addClass(propertyName);
+
+      /* Display trash button */
+      $(".trash").show();
 
       var clauseNum = $(this).attr("name").split("_").pop();
       propertyNameLabel = propertyName
@@ -183,7 +215,7 @@
       if (!tbody.length) {
         th.append(createLabel(propertyNameLabel).attr("id", "label_" + propertyName));
       } else {
-        th.attr("colSpan", 1).append(createLabel(_("or")))
+        th.attr("colSpan", 1).append(createLabel(_("or")));
       }
       tr.append(th);
 
@@ -274,6 +306,9 @@
       var clauseNum = parseInt($(select).attr("name").split("_").pop());
       var tbody = $(select).closest("tbody").parents("tbody").eq(0);
       var copy = tbody.clone(true);
+
+      $(".trash_offset", copy).removeClass("trash_offset");
+
       $(select).closest("td").next().attr("colSpan", 4).end().remove();
       $("tr:first", copy).removeAttr("style");
       $("tr tbody:not(:last)", copy).remove();

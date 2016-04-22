@@ -15,7 +15,7 @@
 from setuptools import setup, find_packages
 
 PACKAGE = 'TracRevtreePlugin'
-VERSION = '2.0.4'
+VERSION = '2.1.2'
 
 setup(
     name=PACKAGE,
@@ -31,7 +31,9 @@ setup(
     package_data={
         'revtree': [
             'htdocs/css/*.css',
+            'htdocs/fonts/*',
             'htdocs/js/*.js',
+            'htdocs/js/require-2.1.20/*.js',
             'htdocs/images/*.gif',
             'templates/*.html'
             'templates/*.svg'
