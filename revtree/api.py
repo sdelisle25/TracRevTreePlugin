@@ -15,8 +15,6 @@
 from trac.config import ExtensionOption
 from trac.core import *
 from trac.versioncontrol.api import RepositoryManager
-from trac.versioncontrol.svn_fs import \
-    SubversionRepository, SvnCachedRepository
 from revtree.svgview import SvgRevtree
 
 
@@ -91,10 +89,9 @@ class RevtreeSystem(Component):
 
     def get_revtree(self, repos, req):
         rm = RepositoryManager(self.env)
-        reps = rm.get_repositories()
+        reps = rm.get_all_repositories()
         for repo in reps:
-            repo = rm.get_repository(repo[0])
-            if isinstance(repo, (SubversionRepository, SvnCachedRepository)):
+            if reps[repo]['type'] == 'svn':
                 break
         else:
             raise TracError("Revtree only supports Subversion repositories")

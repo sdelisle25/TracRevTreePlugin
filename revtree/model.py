@@ -20,6 +20,7 @@ from trac.util.datefmt import utc
 from trac.util.text import to_unicode
 from trac.versioncontrol import NoSuchNode, Node as TracNode, \
     Changeset as TracChangeset
+from trac.versioncontrol.api import RepositoryManager
 import time
 
 
@@ -343,7 +344,16 @@ class Repository(object):
         self.log = env.log
 
         # Trac version control
-        self._crepos = self.env.get_repository()
+        rm = RepositoryManager(self.env)
+        repos = rm.get_all_repositories()
+        # select the first repo that is of 'svn' type
+        # Revtree is designed to work on envs with only one repo
+        for repo in repos:
+            if repos[repo]['type'] == 'svn':
+                self._crepos = rm.get_repository(repos[repo]['name'])
+                break
+        else:
+            raise TracError("Revtree only supports Subversion repositories")
 
         # Dictionary of changesets
         self._changesets = {}
