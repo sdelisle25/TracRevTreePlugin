@@ -84,14 +84,15 @@ class RevtreeSystem(Component):
     enhancers = ExtensionPoint(IRevtreeEnhancer)
     optimizer = ExtensionOption('revtree', 'optimizer', IRevtreeOptimizer,
                                 'DefaultRevtreeOptimizer',
-        """Name of the component implementing `IRevtreeOptimizer`, which is
-        used for optimizing revtree element placements.""")
+        """Name of the component implementing `IRevtreeOptimizer`, 
+        which is used for optimizing revtree element placements.""")
 
     def get_revtree(self, repos, req):
         rm = RepositoryManager(self.env)
         reps = rm.get_all_repositories()
         for repo in reps:
-            if reps[repo]['type'] == 'svn':
+            rtype = reps[repo].get('type', None) or rm.default_repository_type
+            if rtype == 'svn':
                 break
         else:
             raise TracError("Revtree only supports Subversion repositories")
