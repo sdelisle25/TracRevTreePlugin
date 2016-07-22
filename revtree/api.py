@@ -14,6 +14,9 @@
 
 from trac.config import ExtensionOption
 from trac.core import *
+from trac.versioncontrol.api import RepositoryManager
+from revtree.svgview import SvgRevtree
+
 
 __all__ = ['IRevtreeEnhancer', 'IRevtreeOptimizer', 'RevtreeEnhancer',
            'EmptyRangeError', 'BranchPathError', 'RevtreeSystem']
@@ -81,19 +84,20 @@ class RevtreeSystem(Component):
     enhancers = ExtensionPoint(IRevtreeEnhancer)
     optimizer = ExtensionOption('revtree', 'optimizer', IRevtreeOptimizer,
                                 'DefaultRevtreeOptimizer',
-        """Name of the component implementing `IRevtreeOptimizer`, which is
-        used for optimizing revtree element placements.""")
+        """Name of the component implementing `IRevtreeOptimizer`, 
+        which is used for optimizing revtree element placements.""")
 
     def get_revtree(self, repos, req):
-        # ideally, the repository type should be requested from the repos
-        # instance; however it is usually hidden behind the repository cache
-        # that does not report the actual repository backend
-        if self.config.get('trac', 'repository_type') != 'svn':
+        rm = RepositoryManager(self.env)
+        reps = rm.get_all_repositories()
+        for repo in reps:
+            rtype = reps[repo].get('type', None) or rm.default_repository_type
+            if rtype == 'svn':
+                break
+        else:
             raise TracError("Revtree only supports Subversion repositories")
 
         self.env.log.debug("Enhancers: %s" % self.enhancers)
-
-        from revtree.svgview import SvgRevtree
 
         return SvgRevtree(self.env, repos, req.href(),
                           self.enhancers, self.optimizer)

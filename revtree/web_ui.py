@@ -22,12 +22,12 @@ from trac.core import *
 from trac.perm import IPermissionRequestor
 from trac.util.datefmt import (format_datetime, pretty_timedelta, to_timestamp,
                                get_date_format_hint, parse_date)
+from trac.util.text import to_unicode
 from trac.util.translation import _
 from trac.web import IRequestFilter, IRequestHandler
 from trac.web.chrome import add_ctxtnav, add_script, add_stylesheet, \
     INavigationContributor, ITemplateProvider, add_script_data, add_warning, Chrome
 from trac.wiki import wiki_to_html
-from trac.util.text import to_unicode
 import cProfile
 import json
 import re
@@ -388,7 +388,8 @@ class RevtreeModule(Component):
         path = req.args.get('autocompletion', '').strip()
 
         branches = self._get_ui_branches()
-        items = [tag.li(brc, class_="deleted" if deleted else "") for brc, deleted in branches if brc.startswith(path)]
+        items = [tag.li(brc, class_="deleted" if deleted else "")
+                 for brc, deleted in branches if brc.startswith(path)]
         elem = tag.ul(items)
 
         xhtml = elem.generate().render('xhtml', encoding='utf-8')
@@ -410,7 +411,10 @@ class RevtreeModule(Component):
 
         try:
             rev = int(req.args['logrev'])
-            repos = self.env.get_repository()
+            repos = Repository.get_svn_repository(self.env)
+            if not repos:
+                raise TracError("Revtree only supports Subversion "
+                                "repositories")
             chgset = repos.get_changeset(rev)
             wikimsg = wiki_to_html(to_unicode(chgset.message),
                                    self.env,
